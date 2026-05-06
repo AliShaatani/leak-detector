@@ -262,7 +262,7 @@ export default function GroupManager() {
               dataSource={users.map(u => ({ key: u.id, title: `${u.name} (@${u.username})` }))}
               titles={['المستخدمين المتاحين', 'أعضاء المجموعة']}
               targetKeys={targetKeys}
-              onChange={setTargetKeys}
+              onChange={(keys) => setTargetKeys(keys as string[])}
               render={item => item.title}
               listStyle={{
                 width: 300,
