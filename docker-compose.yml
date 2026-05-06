@@ -1,0 +1,63 @@
+services:
+
+  # ── PostgreSQL Database ─────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: pdf_tracker_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data   # ← persistent: survives redeployment
+    ports:
+      - "5432:5432"          # expose for local dev/inspection; remove in prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Next.js Application ─────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdf_tracker_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+      # App
+      NEXTAUTH_SECRET:  ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL:     ${NEXTAUTH_URL}
+      NODE_ENV:         production
+
+      # Default admin account (used by seed script)
+      ADMIN_USERNAME:   ${ADMIN_USERNAME}
+      ADMIN_PASSWORD:   ${ADMIN_PASSWORD}
+      ADMIN_NAME:       ${ADMIN_NAME}
+
+      # ERPNext integration defaults (stored in DB Settings table too)
+      ERPNEXT_BASE_URL: ${ERPNEXT_BASE_URL}
+      ERPNEXT_ENDPOINT: ${ERPNEXT_ENDPOINT}
+      ERPNEXT_TOKEN:    ${ERPNEXT_TOKEN}
+
+      # Barcode default scale (100 = 100%)
+      BARCODE_SCALE_DEFAULT: ${BARCODE_SCALE_DEFAULT}
+
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+    # ── Volumes ──────────────────────────────────────────────────────────────
+    volumes:
+       - pdf_uploads:/app/public/uploads
+
+volumes:
+  db_data:       # PostgreSQL data — persisted across deployments
+  pdf_uploads: # Uncomment to persist uploaded PDFs

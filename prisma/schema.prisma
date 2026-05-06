@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  displayId   String?      @unique // Format: 1234-001
+  username    String       @unique
+  password    String
+  name        String
+  role        String       @default("USER") // ADMIN or USER
+  assignments Assignment[]
+  groups      UserGroup[]
+  createdAt   DateTime     @default(now())
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  name        String
+  filename    String
+  path        String
+  qrX         Float        @default(50) // Horizontal position (percentage)
+  qrY         Float        @default(50) // Vertical position (percentage)
+  qrScale     Float        @default(1.0) // Scale factor
+  marginMode  String       @default("both") // "top", "bottom", "both", "none"
+  barcodeEnabled  Boolean  @default(false) // Stamp barcode on download
+  barcodeAllPages Boolean  @default(false) // If false, first page only
+  categoryId  String?
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  assignments Assignment[]
+  groupAssignments GroupAssignment[]
+  createdAt   DateTime     @default(now())
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  parentId  String?
+  parent    Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children  Category[] @relation("SubCategories")
+  documents Document[]
+  createdAt DateTime   @default(now())
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  expiry      DateTime
+  downloadedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model UserGroup {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+  assignments GroupAssignment[]
+  createdAt DateTime @default(now())
+}
+
+model GroupAssignment {
+  id          String   @id @default(cuid())
+  groupId     String
+  group       UserGroup @relation(fields: [groupId], references: [id])
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  expiry      DateTime
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
