@@ -65,6 +65,8 @@ services:
     networks:
       - app-network
       - dokploy-network
+    volumes:
+      - pdf_uploads:/app/public/uploads:ro
 
 networks:
   app-network:
