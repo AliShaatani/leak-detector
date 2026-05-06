@@ -10,6 +10,7 @@ RUN apk add --no-cache \
     librsvg-dev
 
 WORKDIR /app
+RUN npm install -g npm@11.13.0
 COPY package.json package-lock.json ./
 RUN npm ci
 
@@ -23,6 +24,7 @@ RUN apk add --no-cache \
     librsvg-dev
 
 WORKDIR /app
+RUN npm install -g npm@11.13.0
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 

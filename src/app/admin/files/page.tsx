@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import { FilePlus, FileText, Trash2, MapPin, Share2 } from "lucide-react";
 import { db } from "@/lib/db";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import { Users, FileText, Download, Clock } from "lucide-react";
 import { db } from "@/lib/db";
