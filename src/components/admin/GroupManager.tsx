@@ -245,7 +245,7 @@ export default function GroupManager() {
         centered
         styles={{
           mask: { backdropFilter: "blur(8px)", background: "rgba(0,0,0,0.6)" },
-          content: { borderRadius: 24, padding: "24px" }
+          body: { borderRadius: 24, padding: "24px" }
         }}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical" style={{ marginTop: 24 }}>

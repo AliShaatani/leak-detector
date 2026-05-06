@@ -181,7 +181,7 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
         confirmLoading={loading}
         okText="تحديث كلمة المرور"
         cancelText="إلغاء"
-        styles={{ content: { borderRadius: 20 } }}
+        styles={{ body: { borderRadius: 20 } }}
       >
         <Form form={form} layout="vertical" onFinish={handleChangePassword} style={{ marginTop: 20 }}>
           <Form.Item

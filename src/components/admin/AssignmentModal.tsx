@@ -171,7 +171,7 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
       ]}
       styles={{
         mask: { backdropFilter: "blur(8px)", background: "rgba(0,0,0,0.6)" },
-        content: { borderRadius: 32, padding: "32px 40px" }
+        body: { borderRadius: 32, padding: "32px 40px" }
       }}
     >
       <Flex vertical gap={24} style={{ width: "100%", marginTop: 24 }}>

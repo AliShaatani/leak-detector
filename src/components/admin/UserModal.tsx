@@ -47,7 +47,7 @@ export default function UserModal({ isOpen, onClose, onCreated }: Props) {
       footer={null}
       width={480}
       styles={{
-        content: { borderRadius: 24, padding: "24px 32px" }
+        body: { borderRadius: 24, padding: "24px 32px" }
       }}
     >
       <Form
