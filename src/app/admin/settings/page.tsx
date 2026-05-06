@@ -143,12 +143,11 @@ export default function SettingsPage() {
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <div style={{
-                  background: "#fff",
                   padding: "6px 12px", borderRadius: 4,
                   width: `${Math.round(180 * barcodeScale / 100)}px`,
                   maxWidth: "100%",
                   height: `${Math.round(40 * barcodeScale / 100)}px`,
-                  background: "repeating-linear-gradient(90deg, #000 0px, #000 2px, #fff 2px, #fff 5px)",
+                  background: "white repeating-linear-gradient(90deg, #000 0px, #000 2px, #fff 2px, #fff 5px)",
                   transition: "all 0.2s",
                 }} />
               </div>
