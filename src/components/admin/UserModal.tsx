@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Modal, Form, Input, Select, Button, message } from "antd";
-import { UserOutlined, LockOutlined, ShieldOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 interface Props {
   isOpen: boolean;
