@@ -166,7 +166,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
       render: (text: string) => (
         <Space>
           <FilePdfOutlined style={{ color: "#ff4d4f", fontSize: 18 }} />
-          <Text strong style={{ color: "#fff" }}>{text}</Text>
+          <Text strong style={{ color: "var(--text-main)" }}>{text}</Text>
         </Space>
       ),
     },
@@ -408,7 +408,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
 
         :global(.custom-antd-table .ant-table) {
           background: transparent !important;
-          color: #fff !important;
+          color: var(--text-main) !important;
         }
 
         :global(.custom-antd-table .ant-table-thead > tr > th) {

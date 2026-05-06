@@ -1,28 +1,43 @@
 :root {
-  /* Premium Dark Mode Palette - Maliki Deep Blue */
+  /* Dark Mode (Default) */
   --bg: #0a0a14;
   --surface: #141422;
   --elevated: #1e1e30;
   --border: rgba(255, 255, 255, 0.08);
   --border-bright: rgba(255, 255, 255, 0.15);
-  
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.2);
+  --text-main: #f1f1f9;
+  --text-dim: #94a3b8;
+  --text-mute: #475569;
+  --glass: rgba(20, 20, 34, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.05);
+
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-glow: rgba(59, 130, 246, 0.2);
   
   --success: #10b981;
   --danger: #ef4444;
   --warning: #f59e0b;
   
-  --text-main: #f1f1f9;
-  --text-dim: #94a3b8;
-  --text-mute: #475569;
-  
-  --glass: rgba(20, 20, 34, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.05);
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
   --shadow-md: 0 8px 16px rgba(0,0,0,0.3);
   --shadow-lg: 0 16px 32px rgba(0,0,0,0.4);
+}
+
+[data-theme='light'] {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --elevated: #f1f5f9;
+  --border: rgba(0, 0, 0, 0.06);
+  --border-bright: rgba(0, 0, 0, 0.1);
+  --text-main: #0f172a;
+  --text-dim: #475569;
+  --text-mute: #94a3b8;
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
 }
 
 * {

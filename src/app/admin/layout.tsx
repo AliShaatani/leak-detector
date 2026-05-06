@@ -15,6 +15,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileVisible, setMobileVisible] = React.useState(false);
+  const [isDark, setIsDark] = React.useState(true);
+
+  // Sync theme with DOM
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const navItems = [
     { key: "/admin", label: "لوحة التحكم", icon: <LayoutDashboard size={18} /> },
@@ -26,12 +32,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { key: "/admin/settings", label: "الإعدادات", icon: <Settings size={18} /> },
   ];
 
-  const sidebarContent = (
+  const sidebarContent = (forceShowLabels = false) => (
     <>
       <div style={{ padding: "0 24px 40px", textAlign: "center" }}>
-        <img src="/logo.png" alt="Logo" style={{ width: 60, marginBottom: 16, marginTop: 10 }} />
-        <Title level={4} style={{ color: "#fff", margin: 0, fontWeight: 800 }}>لوحة الإشراف</Title>
-        <Text type="secondary" style={{ fontSize: 12 }}>نظام الإدارة الذكي</Text>
+        <img src={isDark ? "/logo.png" : "/logo_light.png"} alt="Logo" style={{ width: 60, marginBottom: 16, marginTop: 10 }} />
+        <Title level={4} style={{ color: "var(--text-main)", margin: 0, fontWeight: 800 }}>لوحة الإشراف</Title>
+        <Text type="secondary" style={{ fontSize: 12, color: "var(--text-dim)" }}>نظام الإدارة الذكي</Text>
       </div>
 
       <div style={{ padding: "0 12px" }}>
@@ -39,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link key={item.key} href={item.key} onClick={() => setMobileVisible(false)}>
             <div className={`custom-nav-item ${pathname === item.key ? "active" : ""}`}>
               {item.icon}
-              {!collapsed && <span>{item.label}</span>}
+              {(forceShowLabels || !collapsed) && <span>{item.label}</span>}
             </div>
           </Link>
         ))}
@@ -49,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/">
           <div className="custom-nav-item logout">
             <LogOut size={18} />
-            {!collapsed && <span>تسجيل الخروج</span>}
+            {(forceShowLabels || !collapsed) && <span>تسجيل الخروج</span>}
           </div>
         </Link>
       </div>
@@ -57,18 +63,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <AntdConfig>
-      <Layout style={{ minHeight: "100vh", background: "#080a0f" }}>
+    <AntdConfig isDark={isDark}>
+      <Layout style={{ minHeight: "100vh", background: "var(--bg)", transition: "all 0.3s ease" }}>
         {/* Mobile Header */}
         <div className="mobile-header">
            <Button 
             type="text" 
-            icon={<ScanOutlined style={{ color: "#fff" }} />} 
+            icon={<ScanOutlined style={{ color: "var(--text-main)" }} />} 
             onClick={() => setMobileVisible(true)}
             style={{ fontSize: 24, width: 50, height: 50 }}
           />
-          <Title level={5} style={{ color: "#fff", margin: 0 }}>نظام التسريبات</Title>
-          <Avatar size={32} style={{ background: "#3b82f6" }}>A</Avatar>
+          <Title level={5} style={{ color: "var(--text-main)", margin: 0 }}>نظام التسريبات</Title>
+          <Button 
+            shape="circle" 
+            icon={isDark ? <LayoutDashboard size={18} /> : <ScanOutlined size={18} />} 
+            onClick={() => setIsDark(!isDark)}
+          />
         </div>
 
         {/* Desktop Sider */}
@@ -79,18 +89,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           breakpoint="lg"
           collapsedWidth="80"
           style={{
-            background: "rgba(12, 14, 22, 0.95)",
-            borderLeft: "1px solid rgba(255, 255, 255, 0.05)",
+            background: "var(--surface)",
+            borderLeft: "1px solid var(--border)",
             padding: "24px 0",
             position: "fixed",
             height: "100vh",
             right: 0,
             zIndex: 1000,
             backdropFilter: "blur(20px)",
+            transition: "all 0.3s ease",
           }}
           className="desktop-sider"
         >
-          {sidebarContent}
+          {sidebarContent()}
         </Sider>
 
         {/* Mobile Sider (Drawer) */}
@@ -98,19 +109,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           placement="right"
           onClose={() => setMobileVisible(false)}
           open={mobileVisible}
-          styles={{ body: { padding: 0, background: "#0c0e16" } }}
+          styles={{ body: { padding: 0, background: "var(--surface)" } }}
           width={280}
           closable={false}
         >
           <div style={{ padding: "24px 0", height: "100%", position: "relative" }}>
-            {sidebarContent}
+            {sidebarContent(true)}
           </div>
         </Drawer>
 
         <Layout className="main-layout-container" style={{ 
           marginRight: collapsed ? 80 : 280, 
           "--sidebar-width": collapsed ? "80px" : "280px",
-          transition: "margin-right 0.2s",
+          transition: "margin-right 0.2s, background 0.3s ease",
           background: "transparent" 
         } as React.CSSProperties}>
           <Header className="desktop-header" style={{ 
@@ -121,13 +132,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             alignItems: "center", 
             justifyContent: "flex-end" 
           }}>
-            <Flex align="center" gap={12} className="user-badge">
-              <Flex vertical align="flex-end" gap={0}>
-                <Text strong style={{ color: "#fff", lineHeight: 1 }}>المشرف الرئيسي</Text>
-                <Text type="secondary" style={{ fontSize: 11 }}>ID: ADMIN_001</Text>
+            <Space size={24}>
+              <Button 
+                shape="circle" 
+                size="large"
+                style={{ background: "var(--elevated)", border: "1px solid var(--border)", color: "var(--text-main)" }}
+                icon={isDark ? "☀️" : "🌙"} 
+                onClick={() => setIsDark(!isDark)}
+              />
+              <Flex align="center" gap={12} className="user-badge">
+                <Flex vertical align="flex-end" gap={0}>
+                  <Text strong style={{ color: "var(--text-main)", lineHeight: 1 }}>المشرف الرئيسي</Text>
+                  <Text type="secondary" style={{ fontSize: 11, color: "var(--text-dim)" }}>ID: ADMIN_001</Text>
+                </Flex>
+                <Avatar size={40} style={{ background: "var(--accent)", fontWeight: 800 }}>A</Avatar>
               </Flex>
-              <Avatar size={40} style={{ background: "#3b82f6", fontWeight: 800 }}>A</Avatar>
-            </Flex>
+            </Space>
           </Header>
 
           <Content className="main-content" style={{ padding: "0 40px 40px" }}>
@@ -145,7 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           gap: 12px;
           padding: 14px 20px;
           border-radius: 14px;
-          color: rgba(255, 255, 255, 0.45);
+          color: var(--text-dim);
           transition: all 0.3s ease;
           cursor: pointer;
           font-weight: 600;
@@ -155,21 +175,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
 
         .custom-nav-item:hover {
-          color: #fff;
-          background: rgba(255, 255, 255, 0.03);
+          color: var(--text-main);
+          background: var(--border);
         }
 
         .custom-nav-item.active {
           color: #fff;
-          background: #3b82f6;
-          box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+          background: var(--accent);
+          box-shadow: 0 10px 25px var(--accent-glow);
         }
 
         .user-badge {
-          background: rgba(255, 255, 255, 0.03);
+          background: var(--elevated);
           padding: 6px 16px;
           border-radius: 50px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
         }
 
         .mobile-header {
@@ -179,13 +199,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           right: 0;
           left: 0;
           height: 64px;
-          background: rgba(12, 14, 22, 0.9);
+          background: var(--glass);
           backdrop-filter: blur(10px);
           z-index: 900;
           padding: 0 16px;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--border);
         }
 
         @media (max-width: 992px) {
@@ -206,7 +226,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             padding: 20px !important;
           }
         }
-
+      `}</style>
         .animate-fade {
           animation: fadeUp 0.6s ease-out;
         }

@@ -65,7 +65,7 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
             style={{ backgroundColor: record.role === "ADMIN" ? "#f5222d" : "#3b82f6" }}
           />
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ color: "#fff", fontWeight: 700 }}>{text}</span>
+            <span style={{ color: "var(--text-main)", fontWeight: 700 }}>{text}</span>
             <span style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>{record.username}</span>
           </div>
         </Space>
@@ -197,15 +197,15 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
 
       <style jsx>{`
         .users-list-wrapper {
-          background: rgba(20, 22, 31, 0.4);
+          background: var(--surface);
           border-radius: 24px;
           padding: 24px;
-          border: 1px solid rgba(255,255,255,0.05);
+          border: 1px solid var(--border);
         }
 
         :global(.custom-antd-table .ant-table) {
           background: transparent !important;
-          color: #fff !important;
+          color: var(--text-main) !important;
         }
 
         :global(.custom-antd-table .ant-table-thead > tr > th) {
