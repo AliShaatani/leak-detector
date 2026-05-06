@@ -44,11 +44,11 @@ services:
       - app-network
       - dokploy-network
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
+      test: ["CMD-SHELL", "node -e \"const http = require('http'); const options = { host: 'localhost', port: 3000, timeout: 2000 }; const request = http.request(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); request.on('error', (err) => { process.exit(1); }); request.end();\""]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 20s
+      start_period: 60s
 
   # ── Nginx Proxy ─────────────────────────────────────────────────────────────
   nginx:
