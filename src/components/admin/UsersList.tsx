@@ -170,6 +170,7 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
           pageSizeOptions: ['10', '20', '50', '100'],
           showTotal: (total, range) => `عرض ${range[0]}-${range[1]} من أصل ${total} مستخدم`
         }}
+        scroll={{ x: 'max-content' }}
         className="custom-antd-table"
       />
 

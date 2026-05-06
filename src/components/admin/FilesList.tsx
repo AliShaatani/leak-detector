@@ -347,6 +347,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
           pageSizeOptions: ['10', '20', '50', '100'],
           showTotal: (total, range) => `عرض ${range[0]}-${range[1]} من أصل ${total} ملف`
         }}
+        scroll={{ x: 'max-content' }}
         className="custom-antd-table"
       />
 
@@ -391,12 +392,18 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
           position: fixed;
           top: 0;
           left: 0;
-          right: 280px; /* Leave space for sidebar */
+          right: var(--sidebar-width, 280px);
           bottom: 0;
           z-index: 999999;
           margin: 0 !important;
           padding: 0 !important;
           background: #080a0f;
+        }
+
+        @media (max-width: 992px) {
+          .fullscreen-positioner {
+            right: 0;
+          }
         }
 
         :global(.custom-antd-table .ant-table) {
