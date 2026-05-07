@@ -28,12 +28,12 @@
   --bg: #f8fafc;
   --surface: #ffffff;
   --elevated: #f1f5f9;
-  --border: rgba(0, 0, 0, 0.06);
-  --border-bright: rgba(0, 0, 0, 0.1);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-bright: rgba(0, 0, 0, 0.12);
   --text-main: #0f172a;
-  --text-dim: #475569;
-  --text-mute: #94a3b8;
-  --glass: rgba(255, 255, 255, 0.8);
+  --text-dim: #334155;
+  --text-mute: #64748b;
+  --glass: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
@@ -55,7 +55,7 @@ html, body {
 }
 
 a {
-  color: #ffffff;
+  color: var(--accent);
   text-decoration: none;
 }
 

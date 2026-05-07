@@ -58,7 +58,7 @@ export default function LoginPage() {
             <div className="brand-logo">
               <img src="/logo.png" alt="Logo" style={{ width: "120px", height: "auto", objectFit: "contain" }} />
             </div>
-            <Title level={1} style={{ margin: "24px 0 8px", color: "#fff", fontWeight: 900, fontSize: "2.5rem" }}>
+            <Title level={1} style={{ margin: "24px 0 8px", color: "var(--text-main)", fontWeight: 900, fontSize: "2.5rem" }}>
               نظام إدارة نماذج الامتحان
             </Title>
             <Text type="secondary" style={{ fontSize: 16 }}>
@@ -164,7 +164,7 @@ export default function LoginPage() {
         .split-login-container {
           min-height: 100vh;
           display: flex;
-          background: #080a0f;
+          background: var(--bg);
         }
 
         /* Right Side: Form */
@@ -175,7 +175,7 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           padding: 60px;
-          background: #0c0e16;
+          background: var(--surface);
           position: relative;
           z-index: 2;
           box-shadow: 20px 0 60px rgba(0,0,0,0.5);
@@ -202,11 +202,11 @@ export default function LoginPage() {
         }
 
         .custom-input {
-          background: rgba(255, 255, 255, 0.03) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          background: var(--bg) !important;
+          border: 1px solid var(--border) !important;
           border-radius: 14px !important;
           padding: 14px 20px !important;
-          color: #fff !important;
+          color: var(--text-main) !important;
           height: 56px;
         }
 
@@ -215,7 +215,7 @@ export default function LoginPage() {
           background: rgba(255, 255, 255, 0.05) !important;
         }
 
-        .ant-input-password-icon { color: rgba(255,255,255,0.25) !important; }
+        .ant-input-password-icon { color: var(--text-mute) !important; }
 
         .form-footer {
           margin-top: 60px;

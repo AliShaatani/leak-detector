@@ -146,7 +146,7 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
       <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
         <Input
           placeholder="بحث في المستخدمين..."
-          prefix={<SearchOutlined style={{ color: "rgba(255,255,255,0.45)" }} />}
+          prefix={<SearchOutlined style={{ color: "var(--text-mute)" }} />}
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
           size="large"
@@ -154,9 +154,9 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
           style={{
             maxWidth: 350,
             borderRadius: 12,
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.1)",
-            color: "#fff"
+            background: "var(--elevated)",
+            borderColor: "var(--border)",
+            color: "var(--text-main)"
           }}
         />
       </Flex>
@@ -209,17 +209,18 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
         }
 
         :global(.custom-antd-table .ant-table-thead > tr > th) {
-          background: rgba(255, 255, 255, 0.03) !important;
-          color: rgba(255, 255, 255, 0.45) !important;
-          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+          background: var(--elevated) !important;
+          color: var(--text-dim) !important;
+          border-bottom: 1px solid var(--border) !important;
         }
 
         :global(.custom-antd-table .ant-table-tbody > tr > td) {
-          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+          border-bottom: 1px solid var(--border) !important;
         }
 
         :global(.custom-antd-table .ant-table-tbody > tr:hover > td) {
-          background: rgba(59, 130, 246, 0.05) !important;
+          background: var(--elevated) !important;
+          opacity: 0.9;
         }
       `}</style>
     </div>

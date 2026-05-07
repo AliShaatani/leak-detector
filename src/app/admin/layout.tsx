@@ -35,7 +35,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const sidebarContent = (forceShowLabels = false) => (
     <>
       <div style={{ padding: "0 24px 40px", textAlign: "center" }}>
-        <img src={isDark ? "/logo.png" : "/logo_light.png"} alt="Logo" style={{ width: 60, marginBottom: 16, marginTop: 10 }} />
+        <img 
+          src={isDark ? "/logo.png" : "/logo_light.png"} 
+          onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png" }}
+          alt="Logo" 
+          style={{ width: 60, marginBottom: 16, marginTop: 10 }} 
+        />
         <Title level={4} style={{ color: "var(--text-main)", margin: 0, fontWeight: 800 }}>لوحة الإشراف</Title>
         <Text type="secondary" style={{ fontSize: 12, color: "var(--text-dim)" }}>نظام الإدارة الذكي</Text>
       </div>
@@ -64,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <AntdConfig isDark={isDark}>
-      <Layout style={{ minHeight: "100vh", background: "var(--bg)", transition: "all 0.3s ease" }}>
+      <Layout style={{ minHeight: "100vh", background: "var(--bg)", transition: "background 0.3s ease" }}>
         {/* Mobile Header */}
         <div className="mobile-header">
            <Button 
@@ -97,7 +102,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             right: 0,
             zIndex: 1000,
             backdropFilter: "blur(20px)",
-            transition: "all 0.3s ease",
+            transition: "width 0.3s ease, background 0.3s ease, margin 0.3s ease",
           }}
           className="desktop-sider"
         >
@@ -121,7 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Layout className="main-layout-container" style={{ 
           marginRight: collapsed ? 80 : 280, 
           "--sidebar-width": collapsed ? "80px" : "280px",
-          transition: "margin-right 0.2s, background 0.3s ease",
+          transition: "margin-right 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), background 0.3s ease",
           background: "transparent" 
         } as React.CSSProperties}>
           <Header className="desktop-header" style={{ 
@@ -182,7 +187,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .custom-nav-item.active {
           color: #fff;
           background: var(--accent);
-          box-shadow: 0 10px 25px var(--accent-glow);
+          box-shadow: 0 4px 12px var(--accent-glow);
         }
 
         .user-badge {

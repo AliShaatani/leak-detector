@@ -96,8 +96,8 @@ export default function SettingsPage() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
           <div>
-            <Title level={2} style={{ margin: 0, color: "#fff", fontWeight: 900 }}>الإعدادات</Title>
-            <Text type="secondary">تخصيص النظام وإدارة معايير الأمان</Text>
+            <Title level={2} style={{ margin: 0, color: "var(--text-main)", fontWeight: 900 }}>الإعدادات</Title>
+            <Text type="secondary" style={{ color: "var(--text-dim)" }}>تخصيص النظام وإدارة معايير الأمان</Text>
           </div>
         </Flex>
 
@@ -114,7 +114,7 @@ export default function SettingsPage() {
             />
             <div style={{ padding: "0 8px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <Text style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>حجم الباركود</Text>
+                <Text style={{ color: "var(--text-dim)", fontWeight: 600 }}>حجم الباركود</Text>
                 <div style={{
                   background: "linear-gradient(135deg,#a78bfa,#7c3aed)",
                   color: "#fff", fontWeight: 800, fontSize: 18,
@@ -138,8 +138,8 @@ export default function SettingsPage() {
               {/* Live preview */}
               <div style={{
                 marginTop: 24, padding: 20,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 14,
+                background: "var(--bg)",
+                border: "1px dashed var(--border)", borderRadius: 14,
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <div style={{
@@ -240,13 +240,22 @@ export default function SettingsPage() {
       </motion.div>
 
       <style jsx global>{`
-        .settings-card { background: rgba(20,22,31,0.4) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 24px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; }
-        .ant-card-head { border-bottom: 1px solid rgba(255,255,255,0.05) !important; padding: 0 24px !important; }
-        .ant-card-head-title { color: #fff !important; font-weight: 700 !important; font-size: 16px !important; }
-        .ant-form-item-label label { color: rgba(255,255,255,0.6) !important; font-weight: 600 !important; }
-        .ant-input-affix-wrapper, .erp-input { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.1) !important; border-radius: 12px !important; }
-        .ant-input-affix-wrapper:hover, .ant-input-affix-wrapper-focused { border-color: #f59e0b !important; }
-        .ant-input { background: transparent !important; color: #fff !important; }
+        .settings-card { 
+          background: var(--surface) !important; 
+          border: 1px solid var(--border) !important; 
+          border-radius: 24px !important; 
+          box-shadow: var(--shadow-lg) !important; 
+        }
+        .ant-card-head { border-bottom: 1px solid var(--border) !important; padding: 0 24px !important; }
+        .ant-card-head-title { color: var(--text-main) !important; font-weight: 700 !important; font-size: 16px !important; }
+        .ant-form-item-label label { color: var(--text-dim) !important; font-weight: 600 !important; }
+        .ant-input-affix-wrapper, .erp-input { 
+          background: var(--bg) !important; 
+          border-color: var(--border) !important; 
+          border-radius: 12px !important; 
+        }
+        .ant-input-affix-wrapper:hover, .ant-input-affix-wrapper-focused { border-color: var(--accent) !important; }
+        .ant-input { background: transparent !important; color: var(--text-main) !important; }
       `}</style>
     </div>
   );
