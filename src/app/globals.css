@@ -16,7 +16,11 @@
   --accent-glow: rgba(59, 130, 246, 0.2);
   
   --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.2);
   --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --danger-border: rgba(239, 68, 68, 0.2);
   --warning: #f59e0b;
   
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
@@ -38,6 +42,10 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.15);
+  --danger-bg: rgba(239, 68, 68, 0.08);
+  --danger-border: rgba(239, 68, 68, 0.15);
 }
 
 * {

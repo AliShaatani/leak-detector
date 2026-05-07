@@ -176,8 +176,6 @@ function FileCard({ assignment, onDownload, downloading }: { assignment: any; on
 
         <span style={{
           fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 50, flexShrink: 0,
-          background: isExpired ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)",
-          color: isExpired ? "#f87171" : "#4ade80",
           background: isExpired ? "var(--danger-bg)" : "var(--success-bg)",
           color: isExpired ? "var(--danger)" : "var(--success)",
           border: `1px solid ${isExpired ? "var(--danger-border)" : "var(--success-border)"}`,
