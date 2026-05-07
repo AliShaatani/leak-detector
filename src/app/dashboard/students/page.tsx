@@ -354,26 +354,19 @@ export default function StudentsPage() {
           )}
         </div>
 
-        {/* RIGHT — Sidebar details (hidden on mobile) */}
-        {selected && renderDetails(false)}
       </div>
 
       <style>{`
         .main-grid {
           display: grid;
-          grid-template-columns: ${selected ? "1.2fr 0.8fr" : "1fr"};
+          grid-template-columns: 1fr;
           gap: 24px;
         }
 
-        .details-inline { display: none; }
-        .details-sidebar { display: block; }
+        .details-inline { display: block; }
+        .details-sidebar { display: none; }
 
-        @media (max-width: 1024px) {
-          .main-grid {
-            grid-template-columns: 1fr;
-          }
-          .details-sidebar { display: none; }
-          .details-inline { display: block; }
+        @media (max-width: 640px) {
           .step-label { display: none; }
         }
 
