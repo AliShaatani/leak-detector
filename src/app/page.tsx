@@ -7,6 +7,28 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const { Title, Text } = Typography;
 
+function ThemeLogo() {
+  const [isDark, setIsDark] = useState(true);
+  
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.getAttribute("data-theme") !== "light");
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    setIsDark(document.documentElement.getAttribute("data-theme") !== "light");
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <img 
+      src={isDark ? "/logo.png" : "/logo-black.png"} 
+      alt="Logo" 
+      style={{ width: "120px", height: "auto", objectFit: "contain" }} 
+      onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png" }}
+    />
+  );
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +78,7 @@ export default function LoginPage() {
         >
           <div className="brand-header">
             <div className="brand-logo">
-              <img src="/logo.png" alt="Logo" style={{ width: "120px", height: "auto", objectFit: "contain" }} />
+              <ThemeLogo />
             </div>
             <Title level={1} style={{ margin: "24px 0 8px", color: "var(--text-main)", fontWeight: 900, fontSize: "2.5rem" }}>
               نظام إدارة نماذج الامتحان

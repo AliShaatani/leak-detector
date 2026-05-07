@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <>
       <div style={{ padding: "0 24px 40px", textAlign: "center" }}>
         <img 
-          src={isDark ? "/logo.png" : "/logo_light.png"} 
+          src={isDark ? "/logo.png" : "/logo-black.png"} 
           onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png" }}
           alt="Logo" 
           style={{ width: 60, marginBottom: 16, marginTop: 10 }} 
