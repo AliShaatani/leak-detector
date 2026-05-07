@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef } from "react";
+import { Select } from "antd";
 
 interface Student {
   name: string;
@@ -214,28 +215,25 @@ export default function StudentsPage() {
                 <div style={{ fontSize: 13, color: "var(--text-dim)", marginBottom: 10, fontWeight: 600 }}>
                   اختر القاعة الجديدة
                 </div>
-                <select
-                  value={selectedExamPoint}
-                  onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
+                <Select
+                  showSearch
+                  placeholder="اختر قاعة..."
+                  value={selectedExamPoint || undefined}
+                  onChange={val => { setSelectedExamPoint(val); setUpdateSuccess(false); }}
                   disabled={examPointsLoading}
-                  style={{
-                    width: "100%", background: "var(--bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 12, color: "var(--text-main)",
-                    padding: "12px 16px", fontSize: 14,
-                    cursor: "pointer", fontFamily: "inherit", direction: "rtl",
-                    appearance: "none", outline: "none",
-                  }}
+                  loading={examPointsLoading}
+                  style={{ width: "100%" }}
+                  variant="filled"
+                  optionFilterProp="children"
+                  dropdownStyle={{ borderRadius: 12, border: "1px solid var(--border)", background: "var(--surface)" }}
+                  className="custom-antd-select"
                 >
-                  <option value="" disabled style={{ background: "#1a1c28" }}>
-                    {examPointsLoading ? "جاري تحميل القاعات..." : "اختر قاعة..."}
-                  </option>
                   {examPoints.map(ep => (
-                    <option key={ep.name} value={ep.name} style={{ background: "#1a1c28" }}>
+                    <Select.Option key={ep.name} value={ep.name}>
                       {ep.title || ep.name}{ep.city ? ` — ${ep.city}` : ""}
-                    </option>
+                    </Select.Option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               {/* Update button */}
@@ -426,7 +424,51 @@ export default function StudentsPage() {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        select option { background: var(--elevated); color: var(--text-main); }
+        
+        .custom-antd-select .ant-select-selector {
+          background: var(--bg) !important;
+          border: 1px solid var(--border) !important;
+          border-radius: 12px !important;
+          height: 48px !important;
+          display: flex !important;
+          align-items: center !important;
+          color: var(--text-main) !important;
+          padding: 0 16px !important;
+        }
+
+        .custom-antd-select .ant-select-selection-placeholder {
+          color: var(--text-mute) !important;
+          line-height: 48px !important;
+        }
+
+        .custom-antd-select .ant-select-selection-item {
+          color: var(--text-main) !important;
+          line-height: 48px !important;
+          font-weight: 600 !important;
+        }
+
+        .ant-select-dropdown {
+          background-color: var(--surface) !important;
+          border: 1px solid var(--border) !important;
+          padding: 8px !important;
+        }
+
+        .ant-select-item {
+          color: var(--text-main) !important;
+          border-radius: 8px !important;
+          margin-bottom: 2px !important;
+          transition: all 0.2s !important;
+        }
+
+        .ant-select-item-option-active {
+          background: var(--border) !important;
+        }
+
+        .ant-select-item-option-selected {
+          background: var(--accent) !important;
+          color: #fff !important;
+        }
+
         button:hover:not(:disabled) { opacity: 0.9; }
       `}</style>
     </div>
