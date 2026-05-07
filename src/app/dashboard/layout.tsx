@@ -8,14 +8,24 @@ import { Home, Search, LogOut, User, ChevronRight } from "lucide-react";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [userName, setUserName] = React.useState("");
   const [displayId, setDisplayId] = React.useState("");
+  const [isReady, setIsReady] = React.useState(false);
   const pathname = usePathname();
 
   React.useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      window.location.href = "/";
+      return;
+    }
+    
     const name = localStorage.getItem("user_name");
     const id = localStorage.getItem("user_display_id");
     if (name) setUserName(name);
     if (id) setDisplayId(id);
+    setIsReady(true);
   }, []);
+
+  if (!isReady) return null; // Prevent flash of content
 
   const tabs = [
     { href: "/dashboard", label: "الرئيسية", icon: Home },

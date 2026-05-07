@@ -16,11 +16,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileVisible, setMobileVisible] = React.useState(false);
   const [isDark, setIsDark] = React.useState(true);
+  const [isReady, setIsReady] = React.useState(false);
 
-  // Sync theme with DOM
+  // Sync theme and check auth
   React.useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    const userRole = localStorage.getItem("user_role");
+
+    if (!userId || userRole !== "ADMIN") {
+      window.location.href = "/";
+      return;
+    }
+    
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    setIsReady(true);
   }, [isDark]);
+
+  if (!isReady) return null;
 
   const navItems = [
     { key: "/admin", label: "لوحة التحكم", icon: <LayoutDashboard size={18} /> },

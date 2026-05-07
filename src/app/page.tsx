@@ -50,6 +50,7 @@ export default function LoginPage() {
         localStorage.setItem("user_name", data.name);
         localStorage.setItem("user_display_id", data.displayId || "");
         localStorage.setItem("user_id", data.id);
+        localStorage.setItem("user_role", data.role);
 
         if (data.role === "ADMIN") {
           window.location.href = "/admin";
