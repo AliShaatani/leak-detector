@@ -28,8 +28,9 @@ export default function DashboardContent() {
   }, []);
 
   const handleDownload = (assignmentId: string) => {
+    const userId = localStorage.getItem("user_id");
     setDownloading(assignmentId);
-    window.location.href = `/api/download/${assignmentId}`;
+    window.location.href = `/api/download/${assignmentId}?userId=${userId}`;
     setTimeout(() => setDownloading(null), 3000);
   };
 

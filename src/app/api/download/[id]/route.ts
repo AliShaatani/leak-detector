@@ -13,19 +13,42 @@ export async function GET(
     const { id } = await params;
     const assignmentId = id;
 
+    // Get userId from query params (needed for group assignments watermarking)
+    const { searchParams } = new URL(req.url);
+    const userIdFromQuery = searchParams.get("userId");
+
     // 1. Fetch assignment with related user and file
-    const assignment = await db.assignment.findUnique({
+    // Try individual assignment first
+    let assignment: any = await db.assignment.findUnique({
       where: { id: assignmentId },
       include: { user: true, document: true },
     });
+
+    let isGroupAssignment = false;
+
+    if (!assignment) {
+      // Try group assignment
+      assignment = await db.groupAssignment.findUnique({
+        where: { id: assignmentId },
+        include: { document: true },
+      });
+      isGroupAssignment = !!assignment;
+    }
 
     if (!assignment) {
       return new NextResponse("Assignment not found", { status: 404 });
     }
 
+    // Resolve which userId to use for watermarking
+    const effectiveUserId = isGroupAssignment ? userIdFromQuery : assignment.userId;
+
+    if (!effectiveUserId) {
+      return new NextResponse("User ID required for watermarking", { status: 400 });
+    }
+
     // Direct raw fetch to bypass Prisma Client model sync issues for displayId
     const rawUser: any[] = await db.$queryRaw(
-      Prisma.sql`SELECT "displayId" FROM "User" WHERE "id" = ${assignment.userId}`
+      Prisma.sql`SELECT "displayId" FROM "User" WHERE "id" = ${effectiveUserId}`
     );
     const displayId = rawUser?.[0]?.displayId || "ID-MISSING";
 
@@ -69,8 +92,8 @@ export async function GET(
     // Apply Hidden Digital Metadata
     pdfDoc.setTitle("Secure Exam Document");
     pdfDoc.setAuthor(`System_User_${displayId}`);
-    pdfDoc.setSubject(assignment.userId);
-    pdfDoc.setKeywords(["CONFIDENTIAL", displayId, assignment.userId]);
+    pdfDoc.setSubject(effectiveUserId);
+    pdfDoc.setKeywords(["CONFIDENTIAL", displayId, effectiveUserId]);
 
     // Apply Margin Encoding
     // Extract sequence number from format like "1234-001"
@@ -155,11 +178,13 @@ export async function GET(
     // 6. Save and Serve
     const modifiedPdfBytes = await pdfDoc.save();
     
-    // Update downloadedAt
-    await db.assignment.update({
-      where: { id: assignment.id },
-      data: { downloadedAt: new Date() }
-    });
+    // Update downloadedAt ONLY for individual assignments
+    if (!isGroupAssignment) {
+      await db.assignment.update({
+        where: { id: assignment.id },
+        data: { downloadedAt: new Date() }
+      });
+    }
 
     const safeFilename = encodeURIComponent(assignment.document.name.replace(/\s+/g, "_")) + "_watermarked.pdf";
 

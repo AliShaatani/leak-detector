@@ -74,8 +74,15 @@ export async function GET(
         categoryPath: buildCategoryPath(assignment.document.categoryId)
       }
     }));
-    uniqueAssignments.sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime());
 
+    // Safe sort by date
+    uniqueAssignments.sort((a: any, b: any) => {
+      const dateA = new Date(a.createdAt || 0).getTime();
+      const dateB = new Date(b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+
+    console.log(`Successfully fetched ${uniqueAssignments.length} assignments for user ${userId}`);
     return NextResponse.json(uniqueAssignments);
   } catch (error) {
     console.error("Fetch user assignments error:", error);
