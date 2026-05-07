@@ -53,7 +53,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* logout */}
           <div className="header-right">
-            <div className="id-chip">{displayId}</div>
             <Link href="/" className="logout-btn" onClick={() => localStorage.clear()}>
               <LogOut size={18} />
             </Link>
