@@ -171,9 +171,10 @@ export default function CategoryManager() {
         <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
           <div>
             <h1 style={{ color: "var(--text-main)", fontSize: 28, fontWeight: 800, margin: 0 }}>نظام إدارة التصنيفات</h1>
-        <p style={{ color: "var(--text-dim)", margin: "8px 0 0" }}>
-          نظم ملفاتك في هيكلية شجرية لسهولة التوزيع والتتبع
-        </p>  </div>
+            <p style={{ color: "var(--text-dim)", margin: "8px 0 0" }}>
+              نظم ملفاتك في هيكلية شجرية لسهولة التوزيع والتتبع
+            </p>
+          </div>
           <Button 
             type="primary" 
             icon={<PlusOutlined />} 
@@ -292,7 +293,6 @@ export default function CategoryManager() {
         .custom-tree-select .ant-select-arrow {
           color: var(--text-mute) !important;
         }
-      `}</style>
       `}</style>
     </div>
   );

@@ -292,7 +292,6 @@ export default function GroupManager() {
           color: var(--text-mute) !important;
         }
       `}</style>
-      `}</style>
     </div>
   );
 }
