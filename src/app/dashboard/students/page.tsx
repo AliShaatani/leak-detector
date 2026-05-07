@@ -358,7 +358,7 @@ export default function StudentsPage() {
         {selected && renderDetails(false)}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .main-grid {
           display: grid;
           grid-template-columns: ${selected ? "1.2fr 0.8fr" : "1fr"};
