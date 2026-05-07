@@ -101,7 +101,7 @@ export default function UserModal({ isOpen, onClose, onCreated }: Props) {
           name="role"
         >
           <Select size="large" style={{ borderRadius: 10 }}>
-            <Select.Option value="USER">مستخدم (طالب)</Select.Option>
+            <Select.Option value="USER">منسق قاعة</Select.Option>
             <Select.Option value="ADMIN">مشرف (إدارة)</Select.Option>
           </Select>
         </Form.Item>
