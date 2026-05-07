@@ -117,14 +117,129 @@ export default function StudentsPage() {
     }
   };
 
-  const currentEpLabel = examPoints.find(e => e.name === selected?.exam_points);
+  const renderDetails = (isInline = false) => {
+    if (!selected) return null;
+    const currentEpLabel = examPoints.find(e => e.name === selected?.exam_points);
+
+    return (
+      <div className={isInline ? "details-inline" : "details-sidebar"} style={{
+        animation: "slideIn 0.25s ease",
+        marginTop: isInline ? 12 : 0,
+        marginBottom: isInline ? 16 : 0,
+      }}>
+        <div style={{
+          background: isInline ? "rgba(255,255,255,0.02)" : "rgba(20,22,31,0.8)",
+          border: isInline ? "1px solid rgba(59,130,246,0.15)" : "1px solid rgba(59,130,246,0.25)",
+          borderRadius: 20, padding: isInline ? "20px" : "28px 24px",
+          backdropFilter: isInline ? "none" : "blur(16px)",
+        }}>
+          {/* Student info */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>الطالب المختار</div>
+            <div style={{ color: "#fff", fontWeight: 800, fontSize: isInline ? 18 : 20, marginBottom: 12 }}>{selected.student_name}</div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <span style={{
+                background: "rgba(59,130,246,0.12)", color: "#93c5fd",
+                border: "1px solid rgba(59,130,246,0.25)",
+                padding: "5px 14px", borderRadius: 50, fontSize: 12, fontWeight: 700, fontFamily: "monospace"
+              }}>🪪 {selected.student_id}</span>
+              {selected.type_of_registration && (
+                <span style={{
+                  background: "rgba(139,92,246,0.12)", color: "#c4b5fd",
+                  border: "1px solid rgba(139,92,246,0.25)",
+                  padding: "5px 14px", borderRadius: 50, fontSize: 12, fontWeight: 600
+                }}>📋 {selected.type_of_registration}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Current exam point */}
+          <div style={{
+            background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)",
+            borderRadius: 12, padding: "12px 16px", marginBottom: 24
+          }}>
+            <div style={{ fontSize: 11, color: "#f59e0b", marginBottom: 4 }}>القاعة الحالية</div>
+            <div style={{ color: "#fcd34d", fontWeight: 700, fontSize: 15 }}>
+              {currentEpLabel
+                ? `${currentEpLabel.title}${currentEpLabel.city ? ` — ${currentEpLabel.city}` : ""}`
+                : selected.exam_points || "غير محددة"}
+            </div>
+          </div>
+
+          {/* Divider */}
+          {!isInline && <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 24 }} />}
+
+          {/* New exam point selector */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 10, fontWeight: 600 }}>
+              اختر القاعة الجديدة
+            </div>
+            <select
+              value={selectedExamPoint}
+              onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
+              disabled={examPointsLoading}
+              style={{
+                width: "100%", background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 12, color: "#fff",
+                padding: "12px 16px", fontSize: 14,
+                cursor: "pointer", fontFamily: "inherit", direction: "rtl",
+                appearance: "none", outline: "none",
+              }}
+            >
+              <option value="" disabled style={{ background: "#1a1c28" }}>
+                {examPointsLoading ? "جاري تحميل القاعات..." : "اختر قاعة..."}
+              </option>
+              {examPoints.map(ep => (
+                <option key={ep.name} value={ep.name} style={{ background: "#1a1c28" }}>
+                  {ep.title || ep.name}{ep.city ? ` — ${ep.city}` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Update button */}
+          <button
+            onClick={handleUpdate}
+            disabled={!selectedExamPoint || updating || selectedExamPoint === selected.exam_points}
+            style={{
+              width: "100%", padding: "14px 0",
+              background: updateSuccess
+                ? "linear-gradient(135deg,#22c55e,#15803d)"
+                : !selectedExamPoint || selectedExamPoint === selected.exam_points
+                  ? "rgba(255,255,255,0.06)"
+                  : "linear-gradient(135deg,#3b82f6,#6d28d9)",
+              border: "none", borderRadius: 14,
+              color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "rgba(255,255,255,0.3)" : "#fff",
+              fontWeight: 800, fontSize: 15, cursor: !selectedExamPoint ? "not-allowed" : "pointer",
+              fontFamily: "inherit", transition: "all 0.2s",
+            }}
+          >
+            {updating ? "⏳ جاري التحديث..." : updateSuccess ? "✓ تم التحديث بنجاح" : "تحديث قاعة الامتحان"}
+          </button>
+
+          {updateSuccess && (
+            <div style={{ textAlign: "center", marginTop: 12, color: "#86efac", fontSize: 13 }}>
+              تم تحديث قاعة الامتحان في نظام ERPNext
+            </div>
+          )}
+
+          {/* Deselect */}
+          <button onClick={() => { setSelected(null); setSelectedExamPoint(""); setUpdateSuccess(false); }}
+            style={{ width: "100%", marginTop: 12, padding: "10px 0", background: "none", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
+            إلغاء الاختيار
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 16px" }}>
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ color: "#fff", fontWeight: 900, fontSize: 28, margin: 0 }}>بحث الطلاب</h1>
-        <p style={{ color: "rgba(255,255,255,0.4)", margin: "6px 0 0", fontSize: 14 }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ color: "#fff", fontWeight: 900, fontSize: 24, margin: 0 }}>بحث الطلاب</h1>
+        <p style={{ color: "rgba(255,255,255,0.4)", margin: "4px 0 0", fontSize: 13 }}>
           ابحث عن طالب ← اختره ← عدّل قاعة الامتحان
         </p>
       </div>
@@ -139,24 +254,24 @@ export default function StudentsPage() {
             <React.Fragment key={i}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{
-                  width: 32, height: 32, borderRadius: "50%",
+                  width: 28, height: 28, borderRadius: "50%",
                   background: done ? "#22c55e" : current ? "linear-gradient(135deg,#3b82f6,#6d28d9)" : "rgba(255,255,255,0.08)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: active ? "#fff" : "rgba(255,255,255,0.3)",
-                  fontWeight: 800, fontSize: 14,
+                  fontWeight: 800, fontSize: 12,
                   transition: "all 0.3s",
                 }}>
                   {done ? "✓" : i + 1}
                 </div>
-                <span style={{ color: active ? "#fff" : "rgba(255,255,255,0.3)", fontWeight: 600, fontSize: 14 }}>{label}</span>
+                <span className="step-label" style={{ color: active ? "#fff" : "rgba(255,255,255,0.3)", fontWeight: 600, fontSize: 13 }}>{label}</span>
               </div>
-              {i < 2 && <div style={{ flex: 1, height: 2, background: i < (selected ? 1 : 0) ? "#3b82f6" : "rgba(255,255,255,0.08)", margin: "0 12px", transition: "all 0.3s" }} />}
+              {i < 2 && <div style={{ flex: 1, height: 1, background: i < (selected ? 1 : 0) ? "#3b82f6" : "rgba(255,255,255,0.08)", margin: "0 8px", transition: "all 0.3s" }} />}
             </React.Fragment>
           );
         })}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: selected ? "1fr 1fr" : "1fr", gap: 24, transition: "all 0.3s" }}>
+      <div className="main-grid" style={{ transition: "all 0.3s" }}>
 
         {/* LEFT — Search + Results */}
         <div>
@@ -198,30 +313,33 @@ export default function StudentsPage() {
               {students.map(student => {
                 const isSelected = selected?.name === student.name;
                 return (
-                  <button
-                    key={student.name}
-                    onClick={() => handleSelect(student)}
-                    style={{
-                      width: "100%", textAlign: "right",
-                      background: isSelected
-                        ? "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(109,40,217,0.15))"
-                        : "rgba(255,255,255,0.03)",
-                      border: `2px solid ${isSelected ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.06)"}`,
-                      borderRadius: 14, padding: "14px 18px", cursor: "pointer",
-                      transition: "all 0.2s", color: "#fff", fontFamily: "inherit",
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{student.student_name}</div>
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 12, color: "#93c5fd", fontFamily: "monospace" }}>🪪 {student.student_id}</span>
-                      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>📍 {student.exam_points || "غير محددة"}</span>
-                      {student.type_of_registration && (
-                        <span style={{ fontSize: 12, color: "#c4b5fd", background: "rgba(139,92,246,0.12)", padding: "1px 8px", borderRadius: 50, border: "1px solid rgba(139,92,246,0.25)" }}>
-                          {student.type_of_registration}
-                        </span>
-                      )}
-                    </div>
-                  </button>
+                  <React.Fragment key={student.name}>
+                    <button
+                      onClick={() => handleSelect(student)}
+                      style={{
+                        width: "100%", textAlign: "right",
+                        background: isSelected
+                          ? "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(109,40,217,0.15))"
+                          : "rgba(255,255,255,0.03)",
+                        border: `2px solid ${isSelected ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.06)"}`,
+                        borderRadius: 14, padding: "14px 18px", cursor: "pointer",
+                        transition: "all 0.2s", color: "#fff", fontFamily: "inherit",
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{student.student_name}</div>
+                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 12, color: "#93c5fd", fontFamily: "monospace" }}>🪪 {student.student_id}</span>
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>📍 {student.exam_points || "غير محددة"}</span>
+                        {student.type_of_registration && (
+                          <span style={{ fontSize: 12, color: "#c4b5fd", background: "rgba(139,92,246,0.12)", padding: "1px 8px", borderRadius: 50, border: "1px solid rgba(139,92,246,0.25)" }}>
+                            {student.type_of_registration}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                    {/* Inline details for mobile */}
+                    {isSelected && renderDetails(true)}
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -236,120 +354,32 @@ export default function StudentsPage() {
           )}
         </div>
 
-        {/* RIGHT — Selected student detail + change exam point */}
-        {selected && (
-          <div style={{ animation: "slideIn 0.25s ease" }}>
-            <div style={{
-              background: "rgba(20,22,31,0.8)",
-              border: "1px solid rgba(59,130,246,0.25)",
-              borderRadius: 20, padding: "28px 24px",
-              backdropFilter: "blur(16px)",
-            }}>
-              {/* Student info */}
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>الطالب المختار</div>
-                <div style={{ color: "#fff", fontWeight: 800, fontSize: 20, marginBottom: 12 }}>{selected.student_name}</div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <span style={{
-                    background: "rgba(59,130,246,0.12)", color: "#93c5fd",
-                    border: "1px solid rgba(59,130,246,0.25)",
-                    padding: "5px 14px", borderRadius: 50, fontSize: 13, fontWeight: 700, fontFamily: "monospace"
-                  }}>🪪 {selected.student_id}</span>
-                  {selected.type_of_registration && (
-                    <span style={{
-                      background: "rgba(139,92,246,0.12)", color: "#c4b5fd",
-                      border: "1px solid rgba(139,92,246,0.25)",
-                      padding: "5px 14px", borderRadius: 50, fontSize: 13, fontWeight: 600
-                    }}>📋 {selected.type_of_registration}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Current exam point */}
-              <div style={{
-                background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)",
-                borderRadius: 12, padding: "12px 16px", marginBottom: 24
-              }}>
-                <div style={{ fontSize: 11, color: "#f59e0b", marginBottom: 4 }}>القاعة الحالية</div>
-                <div style={{ color: "#fcd34d", fontWeight: 700, fontSize: 16 }}>
-                  {currentEpLabel
-                    ? `${currentEpLabel.title}${currentEpLabel.city ? ` — ${currentEpLabel.city}` : ""}`
-                    : selected.exam_points || "غير محددة"}
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 24 }} />
-
-              {/* New exam point selector */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 10, fontWeight: 600 }}>
-                  اختر القاعة الجديدة
-                </div>
-                <select
-                  value={selectedExamPoint}
-                  onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
-                  disabled={examPointsLoading}
-                  style={{
-                    width: "100%", background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    borderRadius: 12, color: "#fff",
-                    padding: "12px 16px", fontSize: 14,
-                    cursor: "pointer", fontFamily: "inherit", direction: "rtl",
-                    appearance: "none", outline: "none",
-                  }}
-                >
-                  <option value="" disabled style={{ background: "#1a1c28" }}>
-                    {examPointsLoading ? "جاري تحميل القاعات..." : "اختر قاعة..."}
-                  </option>
-                  {examPoints.map(ep => (
-                    <option key={ep.name} value={ep.name} style={{ background: "#1a1c28" }}>
-                      {ep.title || ep.name}{ep.city ? ` — ${ep.city}` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Update button */}
-              <button
-                onClick={handleUpdate}
-                disabled={!selectedExamPoint || updating || selectedExamPoint === selected.exam_points}
-                style={{
-                  width: "100%", padding: "14px 0",
-                  background: updateSuccess
-                    ? "linear-gradient(135deg,#22c55e,#15803d)"
-                    : !selectedExamPoint || selectedExamPoint === selected.exam_points
-                    ? "rgba(255,255,255,0.06)"
-                    : "linear-gradient(135deg,#3b82f6,#6d28d9)",
-                  border: "none", borderRadius: 14,
-                  color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "rgba(255,255,255,0.3)" : "#fff",
-                  fontWeight: 800, fontSize: 15, cursor: !selectedExamPoint ? "not-allowed" : "pointer",
-                  fontFamily: "inherit", transition: "all 0.2s",
-                }}
-              >
-                {updating ? "⏳ جاري التحديث..." : updateSuccess ? "✓ تم التحديث بنجاح" : "تحديث قاعة الامتحان"}
-              </button>
-
-              {updateSuccess && (
-                <div style={{ textAlign: "center", marginTop: 12, color: "#86efac", fontSize: 13 }}>
-                  تم تحديث قاعة الامتحان في نظام ERPNext
-                </div>
-              )}
-
-              {/* Deselect */}
-              <button onClick={() => { setSelected(null); setSelectedExamPoint(""); setUpdateSuccess(false); }}
-                style={{ width: "100%", marginTop: 12, padding: "10px 0", background: "none", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
-                إلغاء الاختيار
-              </button>
-            </div>
-          </div>
-        )}
+        {/* RIGHT — Sidebar details (hidden on mobile) */}
+        {selected && renderDetails(false)}
       </div>
 
       <style jsx>{`
+        .main-grid {
+          display: grid;
+          grid-template-columns: ${selected ? "1.2fr 0.8fr" : "1fr"};
+          gap: 24px;
+        }
+
+        .details-inline { display: none; }
+        .details-sidebar { display: block; }
+
+        @media (max-width: 1024px) {
+          .main-grid {
+            grid-template-columns: 1fr;
+          }
+          .details-sidebar { display: none; }
+          .details-inline { display: block; }
+          .step-label { display: none; }
+        }
+
         @keyframes slideIn {
-          from { opacity: 0; transform: translateX(20px); }
-          to   { opacity: 1; transform: translateX(0); }
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         select option { background: #1a1c28; }
         button:hover:not(:disabled) { opacity: 0.9; }
