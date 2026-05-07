@@ -79,8 +79,8 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
             {text.charAt(0)}
           </Avatar>
           <Flex vertical gap={0}>
-            <Text strong style={{ color: "#fff" }}>{text}</Text>
-            <Text type="secondary" style={{ fontSize: "12px" }}>@{record.username}</Text>
+            <Text strong style={{ color: "var(--text-main)" }}>{text}</Text>
+            <Text type="secondary" style={{ fontSize: "12px", color: "var(--text-dim)" }}>@{record.username}</Text>
           </Flex>
         </Space>
       ),
@@ -97,7 +97,7 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
       title: "اسم المجموعة",
       dataIndex: "name",
       key: "name",
-      render: (text: string) => <Text strong style={{ color: "#fff" }}>{text}</Text>,
+      render: (text: string) => <Text strong style={{ color: "var(--text-main)" }}>{text}</Text>,
     },
     {
       title: "الحالة",
@@ -135,14 +135,14 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
         <Space style={{ padding: "10px 0" }}>
           <div style={{ 
             width: 40, height: 40, borderRadius: 12, 
-            background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6",
+            background: "var(--brand-light)", color: "var(--brand-color)",
             display: "flex", alignItems: "center", justifyContent: "center" 
           }}>
             <FileTextOutlined style={{ fontSize: 20 }} />
           </div>
           <Flex vertical gap={0}>
-            <Title level={4} style={{ margin: 0, color: "#fff" }}>توزيع ملفات المشروع</Title>
-            <Text type="secondary" style={{ fontSize: 12 }}>المستخدمين {">"} توزيع الملف</Text>
+            <Title level={2} style={{ margin: 0, color: "var(--text-main)", fontWeight: 900 }}>إدارة المستخدمين</Title>
+            <Text type="secondary" style={{ color: "var(--text-dim)" }}>تحكم في صلاحيات الوصول وإعدادات الحسابات</Text>
           </Flex>
         </Space>
       }
@@ -151,11 +151,11 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
       width={880}
       footer={[
         <Flex key="footer" justify="space-between" align="center" style={{ width: "100%" }}>
-          <Text strong style={{ color: "rgba(255,255,255,0.45)" }}>
+          <Text strong style={{ color: "var(--text-dim)" }}>
             تم اختيار {selectedRowKeys.length} مستخدمين و {selectedGroupKeys.length} مجموعات
           </Text>
           <Space>
-            <Button onClick={onClose} type="text" style={{ color: "#fff" }}>إلغاء</Button>
+            <Button onClick={onClose} type="text" style={{ color: "var(--text-main)" }}>إلغاء</Button>
             <Button 
               type="primary" 
               size="large" 
@@ -190,7 +190,7 @@ export default function AssignmentModal({ isOpen, onClose, users, groups = [], f
         />
 
         <Flex gap={20} align="center">
-          <Text strong style={{ color: "rgba(255,255,255,0.85)" }}>تاريخ انتهاء الصلاحية:</Text>
+          <Text strong style={{ color: "var(--text-main)" }}>تاريخ انتهاء الصلاحية:</Text>
           <DatePicker 
             showTime 
             placeholder="اختر التاريخ والوقت"

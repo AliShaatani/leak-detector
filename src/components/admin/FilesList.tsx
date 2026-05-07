@@ -165,7 +165,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
       sorter: (a: any, b: any) => a.name.localeCompare(b.name),
       render: (text: string) => (
         <Space>
-          <FilePdfOutlined style={{ color: "#ff4d4f", fontSize: 18 }} />
+          <FilePdfOutlined style={{ color: "var(--danger)", fontSize: 18 }} />
           <Text strong style={{ color: "var(--text-main)" }}>{text}</Text>
         </Space>
       ),
@@ -179,7 +179,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
       sorter: (a: any, b: any) => (a.category?.name || "").localeCompare(b.category?.name || ""),
       render: (category: any) => (
         category ? (
-          <Tag icon={<FolderOutlined />} color="default" style={{ borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)" }}>
+          <Tag icon={<FolderOutlined />} color="default" style={{ borderRadius: 6, background: "var(--elevated)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>
             {category.name}
           </Tag>
         ) : (
@@ -209,7 +209,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
       sorter: (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       defaultSortOrder: 'descend' as const,
       render: (date: string) => (
-        <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+        <Text style={{ color: "var(--text-mute)", fontSize: 13 }}>
           {new Date(date).toLocaleDateString("en-GB")}
         </Text>
       ),
@@ -323,7 +323,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
       <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
         <Input
           placeholder="بحث في الملفات..."
-          prefix={<SearchOutlined style={{ color: "rgba(255,255,255,0.45)" }} />}
+          prefix={<SearchOutlined style={{ color: "var(--text-mute)" }} />}
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
           size="large"
@@ -331,9 +331,9 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
           style={{
             maxWidth: 350,
             borderRadius: 12,
-            background: "rgba(255,255,255,0.03)",
-            borderColor: "rgba(255,255,255,0.1)",
-            color: "#fff"
+            background: "var(--bg)",
+            borderColor: "var(--border)",
+            color: "var(--text-main)"
           }}
         />
       </Flex>
@@ -412,8 +412,8 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
         }
 
         :global(.custom-antd-table .ant-table-thead > tr > th) {
-          background: rgba(255, 255, 255, 0.03) !important;
-          color: rgba(255, 255, 255, 0.45) !important;
+          background: var(--elevated) !important;
+          color: var(--text-dim) !important;
           border-bottom: 1px solid var(--border) !important;
         }
 

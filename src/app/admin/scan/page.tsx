@@ -34,7 +34,7 @@ function decodeMarginSequence(bits: number[]): number | null {
 // ── User Result Card ──────────────────────────────────────────
 function UserResult({ user, source }: { user: any; source: string }) {
   const downloadCols = [
-    { title: "الملف", dataIndex: "docName", key: "doc", render: (t: string) => <Text style={{ color: "#fff" }}>{t}</Text> },
+    { title: "الملف", dataIndex: "docName", key: "doc", render: (t: string) => <Text style={{ color: "var(--text-main)" }}>{t}</Text> },
     {
       title: "تاريخ التحميل", dataIndex: "downloadedAt", key: "dl",
       render: (d: string) => d
@@ -52,8 +52,8 @@ function UserResult({ user, source }: { user: any; source: string }) {
   return (
     <Card
       style={{
-        background: "linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(20,22,31,0.9) 100%)",
-        border: "1px solid rgba(34,197,94,0.3)",
+        background: "var(--elevated)",
+        border: "1px solid var(--border)",
         borderRadius: 20,
         marginTop: 24,
       }}
@@ -69,7 +69,7 @@ function UserResult({ user, source }: { user: any; source: string }) {
         </div>
         <div>
           <Flex align="center" gap={8}>
-            <Title level={4} style={{ color: "#fff", margin: 0 }}>{user.name}</Title>
+            <Title level={4} style={{ color: "var(--text-main)", margin: 0 }}>{user.name}</Title>
             <Tag color="green" icon={<CheckCircleOutlined />}>تم التعرف عليه</Tag>
             <Tag color={user.role === "ADMIN" ? "red" : "blue"} style={{ fontWeight: 700 }}>
               {user.role === "ADMIN" ? "🛡️ مشرف" : "👤 مستخدم"}
@@ -83,7 +83,7 @@ function UserResult({ user, source }: { user: any; source: string }) {
         </div>
       </Flex>
 
-      <Divider style={{ borderColor: "rgba(255,255,255,0.08)" }} />
+      <Divider style={{ borderColor: "var(--border)" }} />
 
       <Flex align="center" gap={8} style={{ marginBottom: 16 }}>
         <HistoryOutlined style={{ color: "#f59e0b" }} />
@@ -338,7 +338,7 @@ export default function ScanPage() {
           <Flex justify="center" gap={16} style={{ marginTop: 20 }}>
             {!cameraActive ? (
               <Button type="primary" size="large" icon={<CameraOutlined />} onClick={startCamera}
-                style={{ background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", border: "none", height: 50, borderRadius: 14 }}>
+                style={{ height: 50, borderRadius: 14 }}>
                 تشغيل الكاميرا
               </Button>
             ) : (
@@ -369,10 +369,10 @@ export default function ScanPage() {
             }}
           >
             <div style={{ padding: "40px 0" }}>
-              <UploadOutlined style={{ fontSize: 48, color: "#3b82f6", marginBottom: 16, display: "block" }} />
-              <Text style={{ color: "#fff", fontSize: 16 }}>اسحب الصورة هنا أو انقر للاختيار</Text>
+              <UploadOutlined style={{ fontSize: 48, color: "var(--accent)", marginBottom: 16, display: "block" }} />
+              <Text style={{ color: "var(--text-main)", fontSize: 16 }}>اسحب الصورة هنا أو انقر للاختيار</Text>
               <br />
-              <Text type="secondary">JPG, PNG, WEBP مدعومة</Text>
+              <Text type="secondary" style={{ color: "var(--text-mute)" }}>JPG, PNG, WEBP مدعومة</Text>
             </div>
           </Upload.Dragger>
         </div>
@@ -438,7 +438,7 @@ export default function ScanPage() {
                     <div>
                       <Text style={{ color: "#22c55e", fontWeight: 700 }}>تم فك التشفير! الرقم التسلسلي: </Text>
                       <Tag color="green" style={{ fontSize: 16, padding: "2px 12px", fontWeight: 700 }}>{liveSeq}</Tag>
-                      <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}> → سيبحث عن displayId ينتهي بـ -{String(liveSeq).padStart(3,"0")}</Text>
+                      <Text style={{ color: "var(--text-mute)", fontSize: 12 }}> → سيبحث عن displayId ينتهي بـ -{String(liveSeq).padStart(3,"0")}</Text>
                     </div>
                   </Flex>
                 )}
@@ -458,9 +458,9 @@ export default function ScanPage() {
             </Flex>
 
             {/* Bit stream display — color coded by role */}
-            <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 12, padding: "16px 20px", minHeight: 60, marginBottom: 12, border: "1px solid rgba(255,255,255,0.08)", direction: "ltr", overflowX: "auto" }}>
+            <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 20px", minHeight: 60, marginBottom: 12, border: "1px solid var(--border)", direction: "ltr", overflowX: "auto" }}>
               {manualBits.length === 0 ? (
-                <Text type="secondary">ابدأ من اليسار (أول شرطة تراها من الهامش)...</Text>
+                <Text type="secondary" style={{ color: "var(--text-mute)" }}>ابدأ من اليسار (أول شرطة تراها من الهامش)...</Text>
               ) : (
                 <Flex wrap="wrap" gap={4}>
                   {manualBits.map((b, i) => (
@@ -503,8 +503,8 @@ export default function ScanPage() {
             borderRadius: 16, padding: "20px 24px", marginBottom: 24
           }}>
             <Flex align="center" gap={12} style={{ marginBottom: 8 }}>
-              <BarcodeOutlined style={{ fontSize: 28, color: "#60a5fa" }} />
-              <Text strong style={{ color: "#fff", fontSize: 16 }}>استخدم تطبيق قارئ الباركود على هاتفك</Text>
+              <BarcodeOutlined style={{ fontSize: 28, color: "var(--accent)" }} />
+              <Text strong style={{ color: "var(--text-main)", fontSize: 16 }}>استخدم تطبيق قارئ الباركود على هاتفك</Text>
             </Flex>
             <Text type="secondary" style={{ fontSize: 13 }}>
               امسح الباركود المطبوع على الورقة بأي تطبيق (مثل تطبيقات المتجر)، ثم انسخ الرقم الظاهر والصقه أدناه.
@@ -520,9 +520,9 @@ export default function ScanPage() {
               onPressEnter={handleManualSearch}
               autoFocus
               style={{
-                background: "rgba(255,255,255,0.04)",
-                borderColor: "rgba(59,130,246,0.4)",
-                color: "#fff",
+                background: "var(--bg)",
+                borderColor: "var(--border)",
+                color: "var(--text-main)",
                 borderRadius: "14px 0 0 14px",
                 height: 56, fontSize: 18, letterSpacing: 2
               }}
@@ -532,7 +532,7 @@ export default function ScanPage() {
               size="large"
               onClick={handleManualSearch}
               icon={<FileSearchOutlined />}
-              style={{ height: 56, borderRadius: "0 14px 14px 0", background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", border: "none", minWidth: 100, fontWeight: 700 }}
+              style={{ height: 56, borderRadius: "0 14px 14px 0", border: "none", minWidth: 100, fontWeight: 700 }}
             >
               بحث
             </Button>
@@ -566,8 +566,8 @@ export default function ScanPage() {
             <div style={{ padding: "32px 0" }}>
               {pdfScanning
                 ? <Spin size="large" />
-                : <FilePdfOutlined style={{ fontSize: 48, color: "#f87171", marginBottom: 12, display: "block" }} />}
-              <Text style={{ color: "#fff", fontSize: 15 }}>اسحب ملف PDF هنا أو انقر للاختيار</Text>
+                : <FilePdfOutlined style={{ fontSize: 48, color: "var(--danger)", marginBottom: 12, display: "block" }} />}
+              <Text style={{ color: "var(--text-main)", fontSize: 15 }}>اسحب ملف PDF هنا أو انقر للاختيار</Text>
               <br />
               <Text type="secondary" style={{ fontSize: 13 }}>يجب أن يكون ملف PDF محمل من هذا النظام</Text>
             </div>
@@ -575,8 +575,8 @@ export default function ScanPage() {
 
           {/* Metadata fields */}
           {pdfMeta && !pdfMeta.error && (
-            <div style={{ marginTop: 20, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "20px 24px" }}>
-              <Text strong style={{ color: "#fff", fontSize: 15, display: "block", marginBottom: 16 }}>البيانات المستخرجة:</Text>
+            <div style={{ marginTop: 20, background: "var(--elevated)", border: "1px solid var(--border)", borderRadius: 16, padding: "20px 24px" }}>
+              <Text strong style={{ color: "var(--text-main)", fontSize: 15, display: "block", marginBottom: 16 }}>البيانات المستخرجة:</Text>
               <Flex vertical gap={10}>
                 {([
                   { label: "المؤلف (Author)",    value: pdfMeta.author },
@@ -584,8 +584,8 @@ export default function ScanPage() {
                   { label: "الكلمات (Keywords)", value: pdfMeta.keywords },
                 ] as {label:string; value?: string}[]).map(({ label, value }) => value ? (
                   <Flex key={label} gap={12} align="center">
-                    <Text type="secondary" style={{ fontSize: 12, minWidth: 130, flexShrink: 0 }}>{label}</Text>
-                    <Tag style={{ fontFamily: "monospace", fontSize: 12, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff" }}>{value}</Tag>
+                    <Text type="secondary" style={{ fontSize: 12, minWidth: 130, flexShrink: 0, color: "var(--text-mute)" }}>{label}</Text>
+                    <Tag style={{ fontFamily: "monospace", fontSize: 12, background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text-main)" }}>{value}</Tag>
                   </Flex>
                 ) : null)}
 
@@ -622,22 +622,22 @@ export default function ScanPage() {
       <Flex align="center" gap={16} style={{ marginBottom: 32 }}>
         <div style={{
           width: 56, height: 56, borderRadius: 16,
-          background: "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
+          background: "linear-gradient(135deg, var(--danger) 0%, #be123c 100%)",
           display: "flex", alignItems: "center", justifyContent: "center"
         }}>
           <ScanOutlined style={{ fontSize: 28, color: "#fff" }} />
         </div>
         <div>
-          <Title level={2} style={{ color: "#fff", margin: 0, fontWeight: 900 }}>كاشف التسريبات</Title>
-          <Text type="secondary">افحص المستندات المسرّبة وتعرّف على المصدر</Text>
+          <Title level={2} style={{ color: "var(--text-main)", margin: 0, fontWeight: 900 }}>كاشف التسريبات</Title>
+          <Text type="secondary" style={{ color: "var(--text-dim)" }}>افحص المستندات المسرّبة وتعرّف على المصدر</Text>
         </div>
       </Flex>
 
       {/* Scanner Card */}
       <Card
         style={{
-          background: "rgba(20,22,31,0.6)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
           borderRadius: 24,
           backdropFilter: "blur(20px)"
         }}
@@ -647,7 +647,7 @@ export default function ScanPage() {
           items={orderedTabs}
           defaultActiveKey="manual"
           size="large"
-          style={{ color: "#fff" }}
+          style={{ color: "var(--text-main)" }}
         />
       </Card>
 
@@ -655,7 +655,7 @@ export default function ScanPage() {
       {loading && (
         <Flex justify="center" align="center" style={{ marginTop: 40, gap: 12 }}>
           <Spin size="large" />
-          <Text style={{ color: "#fff", fontSize: 16 }}>جاري البحث في قاعدة البيانات...</Text>
+          <Text style={{ color: "var(--text-main)", fontSize: 16 }}>جاري البحث في قاعدة البيانات...</Text>
         </Flex>
       )}
 
@@ -672,25 +672,25 @@ export default function ScanPage() {
             }}
             styles={{ body: { padding: 28, textAlign: "center" } }}
           >
-            <CloseCircleOutlined style={{ fontSize: 48, color: "#ef4444", marginBottom: 12 }} />
-            <Title level={4} style={{ color: "#fff", margin: "0 0 8px" }}>لم يتم التعرف على المستخدم</Title>
-            <Text type="secondary">لا يوجد مستخدم مرتبط بهذا الرقم في قاعدة البيانات.</Text>
+            <CloseCircleOutlined style={{ fontSize: 48, color: "var(--danger)", marginBottom: 12 }} />
+            <Title level={4} style={{ color: "var(--text-main)", margin: "0 0 8px" }}>لم يتم التعرف على المستخدم</Title>
+            <Text type="secondary" style={{ color: "var(--text-dim)" }}>لا يوجد مستخدم مرتبط بهذا الرقم في قاعدة البيانات.</Text>
           </Card>
         )
       )}
 
       <style jsx global>{`
-        .scan-result-table .ant-table { background: transparent !important; color: #fff !important; }
+        .scan-result-table .ant-table { background: transparent !important; color: var(--text-main) !important; }
         .scan-result-table .ant-table-thead > tr > th {
-          background: rgba(255,255,255,0.03) !important;
-          color: rgba(255,255,255,0.45) !important;
-          border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+          background: var(--elevated) !important;
+          color: var(--text-dim) !important;
+          border-bottom: 1px solid var(--border) !important;
         }
-        .scan-result-table .ant-table-tbody > tr > td { border-bottom: 1px solid rgba(255,255,255,0.04) !important; }
-        .ant-tabs-tab { color: rgba(255,255,255,0.45) !important; }
-        .ant-tabs-tab-active .ant-tabs-tab-btn { color: #fff !important; }
-        .ant-tabs-ink-bar { background: #3b82f6 !important; }
-        .ant-tabs-nav::before { border-color: rgba(255,255,255,0.06) !important; }
+        .scan-result-table .ant-table-tbody > tr > td { border-bottom: 1px solid var(--border) !important; }
+        .ant-tabs-tab { color: var(--text-mute) !important; }
+        .ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--text-main) !important; }
+        .ant-tabs-ink-bar { background: var(--accent) !important; }
+        .ant-tabs-nav::before { border-color: var(--border) !important; }
         .ant-alert { border-radius: 12px !important; }
       `}</style>
     </div>

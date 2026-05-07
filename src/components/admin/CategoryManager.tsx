@@ -165,14 +165,15 @@ export default function CategoryManager() {
   return (
     <div className="category-manager">
       <Card 
-        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 16 }}
+        style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16 }}
         styles={{ body: { padding: 32 } }}
       >
         <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
           <div>
-            <Title level={4} style={{ color: "#fff", margin: 0 }}>إدارة تصنيفات الملفات</Title>
-            <Text type="secondary">نظّم مكتبة ملفاتك في مجموعات هرمية لسهولة الوصول</Text>
-          </div>
+            <h1 style={{ color: "var(--text-main)", fontSize: 28, fontWeight: 800, margin: 0 }}>نظام إدارة التصنيفات</h1>
+        <p style={{ color: "var(--text-dim)", margin: "8px 0 0" }}>
+          نظم ملفاتك في هيكلية شجرية لسهولة التوزيع والتتبع
+        </p>  </div>
           <Button 
             type="primary" 
             icon={<PlusOutlined />} 
@@ -197,14 +198,14 @@ export default function CategoryManager() {
             defaultExpandAll
             selectable={false}
             treeData={treeData}
-            style={{ background: "transparent", color: "#fff" }}
+            style={{ background: "transparent", color: "var(--text-main)" }}
             className="custom-category-tree"
           />
         ) : (
-          <div style={{ padding: "60px 0", textAlign: "center", background: "rgba(255,255,255,0.01)", borderRadius: 12 }}>
-            <FolderOutlined style={{ fontSize: 48, color: "rgba(255,255,255,0.05)", marginBottom: 16 }} />
+          <div style={{ padding: "60px 0", textAlign: "center", background: "var(--bg)", borderRadius: 12 }}>
+            <FolderOutlined style={{ fontSize: 48, color: "var(--text-mute)", marginBottom: 16 }} />
             <br />
-            <Text type="secondary">لم يتم إنشاء أي تصنيفات بعد. ابدأ بإضافة مجموعة رئيسية.</Text>
+            <Text type="secondary" style={{ color: "var(--text-mute)" }}>لم يتم إنشاء أي تصنيفات بعد. ابدأ بإضافة مجموعة رئيسية.</Text>
           </div>
         )}
       </Card>
@@ -248,14 +249,14 @@ export default function CategoryManager() {
 
       <style jsx global>{`
         .custom-category-tree .ant-tree-node-content-wrapper:hover {
-          background: rgba(255, 255, 255, 0.03) !important;
+          background: var(--elevated) !important;
         }
         .custom-category-tree .ant-tree-node-content-wrapper {
-          color: #fff !important;
+          color: var(--text-main) !important;
           transition: all 0.2s;
         }
         .custom-category-tree .ant-tree-switcher {
-          color: rgba(255, 255, 255, 0.45) !important;
+          color: var(--text-mute) !important;
         }
         .category-actions {
           opacity: 0;
@@ -265,32 +266,33 @@ export default function CategoryManager() {
           opacity: 1;
         }
         .ant-modal-content {
-          background: #111827 !important;
-          border: 1px solid rgba(255,255,255,0.1);
+          background: var(--surface) !important;
+          border: 1px solid var(--border);
         }
         .ant-modal-header {
           background: transparent !important;
-          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+          border-bottom: 1px solid var(--border) !important;
         }
         .ant-modal-title, .ant-form-item-label label {
-          color: #fff !important;
+          color: var(--text-main) !important;
         }
         .ant-modal-close {
-          color: rgba(255,255,255,0.45) !important;
+          color: var(--text-mute) !important;
         }
         .ant-input {
-          background: rgba(255,255,255,0.02) !important;
-          border: 1px solid rgba(255,255,255,0.1) !important;
-          color: #fff !important;
+          background: var(--bg) !important;
+          border: 1px solid var(--border) !important;
+          color: var(--text-main) !important;
         }
         .custom-tree-select .ant-select-selector {
-          background: rgba(255,255,255,0.02) !important;
-          border: 1px solid rgba(255,255,255,0.1) !important;
-          color: #fff !important;
+          background: var(--bg) !important;
+          border: 1px solid var(--border) !important;
+          color: var(--text-main) !important;
         }
         .custom-tree-select .ant-select-arrow {
-          color: rgba(255,255,255,0.45) !important;
+          color: var(--text-mute) !important;
         }
+      `}</style>
       `}</style>
     </div>
   );

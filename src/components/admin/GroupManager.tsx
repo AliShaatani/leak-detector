@@ -113,7 +113,7 @@ export default function GroupManager() {
       dataIndex: "name",
       key: "name",
       sorter: (a: any, b: any) => a.name.localeCompare(b.name),
-      render: (text: string) => <Text strong style={{ color: "#fff" }}>{text}</Text>,
+      render: (text: string) => <Text strong style={{ color: "var(--text-main)" }}>{text}</Text>,
     },
     {
       title: "عدد الأعضاء",
@@ -130,7 +130,7 @@ export default function GroupManager() {
       sorter: (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       defaultSortOrder: 'descend' as const,
       render: (date: string) => (
-        <Text style={{ color: "rgba(255,255,255,0.45)" }}>
+        <Text style={{ color: "var(--text-mute)" }}>
           {new Date(date).toLocaleDateString("en-GB")}
         </Text>
       ),
@@ -166,13 +166,13 @@ export default function GroupManager() {
   return (
     <div className="group-manager">
       <Card 
-        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 16 }}
+        style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 16 }}
         styles={{ body: { padding: 32 } }}
       >
         <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
           <div>
-            <Title level={4} style={{ color: "#fff", margin: 0 }}>إدارة المجموعات</Title>
-            <Text type="secondary">نظّم المستخدمين في مجموعات لتسهيل توزيع الملفات</Text>
+            <Title level={4} style={{ color: "var(--text-main)", margin: 0 }}>إدارة المجموعات</Title>
+            <Text type="secondary" style={{ color: "var(--text-dim)" }}>نظّم المستخدمين في مجموعات لتسهيل توزيع الملفات</Text>
           </div>
           <Button 
             type="primary" 
@@ -192,7 +192,7 @@ export default function GroupManager() {
         <Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
           <Input
             placeholder="بحث في المجموعات..."
-            prefix={<SearchOutlined style={{ color: "rgba(255,255,255,0.45)" }} />}
+            prefix={<SearchOutlined style={{ color: "var(--text-mute)" }} />}
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
             size="large"
@@ -200,9 +200,9 @@ export default function GroupManager() {
             style={{
               maxWidth: 350,
               borderRadius: 12,
-              background: "rgba(255,255,255,0.03)",
-              borderColor: "rgba(255,255,255,0.1)",
-              color: "#fff"
+              background: "var(--bg)",
+              borderColor: "var(--border)",
+              color: "var(--text-main)"
             }}
           />
         </Flex>
@@ -231,7 +231,7 @@ export default function GroupManager() {
             }}>
               <TeamOutlined style={{ fontSize: 20 }} />
             </div>
-            <Text strong style={{ color: "#fff", fontSize: 18 }}>
+            <Text strong style={{ color: "var(--text-main)", fontSize: 18 }}>
               {editingGroup ? "تعديل المجموعة" : "مجموعة جديدة"}
             </Text>
           </Flex>
@@ -267,8 +267,8 @@ export default function GroupManager() {
               listStyle={{
                 width: 300,
                 height: 300,
-                background: "rgba(255,255,255,0.02)",
-                borderColor: "rgba(255,255,255,0.1)",
+                background: "var(--bg)",
+                borderColor: "var(--border)",
               }}
               style={{ display: "flex", justifyContent: "center" }}
             />
@@ -278,19 +278,20 @@ export default function GroupManager() {
 
       <style jsx global>{`
         .ant-transfer-list-header {
-          background: rgba(255,255,255,0.05) !important;
-          color: #fff !important;
-          border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+          background: var(--elevated) !important;
+          color: var(--text-main) !important;
+          border-bottom: 1px solid var(--border) !important;
         }
         .ant-transfer-list-content-item {
-          color: #fff !important;
+          color: var(--text-main) !important;
         }
         .ant-transfer-list-content-item:hover {
-          background: rgba(255,255,255,0.05) !important;
+          background: var(--elevated) !important;
         }
         .ant-empty-description {
-          color: rgba(255,255,255,0.45) !important;
+          color: var(--text-mute) !important;
         }
+      `}</style>
       `}</style>
     </div>
   );

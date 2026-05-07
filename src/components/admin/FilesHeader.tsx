@@ -86,8 +86,8 @@ export default function FilesHeader() {
   return (
     <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
       <div>
-        <Title level={2} style={{ margin: 0, color: "#fff", fontWeight: 900 }}>إدارة الملفات</Title>
-        <Text type="secondary">رفع وتعديل ملفات PDF وتحديد أماكن رموز الـ QR الديناميكية</Text>
+        <Title level={2} style={{ margin: 0, color: "var(--text-main)", fontWeight: 900 }}>إدارة الملفات</Title>
+        <Text type="secondary" style={{ color: "var(--text-dim)" }}>ارفع الملفات ووزعها على المستخدمين بأمان</Text>
       </div>
 
       <div className="upload-wrapper">

@@ -128,15 +128,15 @@ export default function StudentsPage() {
         marginBottom: isInline ? 16 : 0,
       }}>
         <div style={{
-          background: isInline ? "rgba(255,255,255,0.02)" : "rgba(20,22,31,0.8)",
-          border: isInline ? "1px solid rgba(59,130,246,0.15)" : "1px solid rgba(59,130,246,0.25)",
+          background: isInline ? "var(--elevated)" : "var(--surface)",
+          border: isInline ? "1px solid var(--border)" : "1px solid var(--border)",
           borderRadius: 20, padding: isInline ? "20px" : "28px 24px",
           backdropFilter: isInline ? "none" : "blur(16px)",
         }}>
           {/* Student info */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>الطالب المختار</div>
-            <div style={{ color: "#fff", fontWeight: 800, fontSize: isInline ? 18 : 20, marginBottom: 12 }}>{selected.student_name}</div>
+            <div style={{ fontSize: 11, color: "var(--text-mute)", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>الطالب المختار</div>
+            <div style={{ color: "var(--text-main)", fontWeight: 800, fontSize: isInline ? 18 : 20, marginBottom: 12 }}>{selected.student_name}</div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <span style={{
                 background: "rgba(59,130,246,0.12)", color: "#93c5fd",
@@ -167,11 +167,11 @@ export default function StudentsPage() {
           </div>
 
           {/* Divider */}
-          {!isInline && <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 24 }} />}
+          {!isInline && <div style={{ height: 1, background: "var(--border)", marginBottom: 24 }} />}
 
           {/* New exam point selector */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 10, fontWeight: 600 }}>
+            <div style={{ fontSize: 13, color: "var(--text-dim)", marginBottom: 10, fontWeight: 600 }}>
               اختر القاعة الجديدة
             </div>
             <select
@@ -179,9 +179,9 @@ export default function StudentsPage() {
               onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
               disabled={examPointsLoading}
               style={{
-                width: "100%", background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: 12, color: "#fff",
+                width: "100%", background: "var(--bg)",
+                border: "1px solid var(--border)",
+                borderRadius: 12, color: "var(--text-main)",
                 padding: "12px 16px", fontSize: 14,
                 cursor: "pointer", fontFamily: "inherit", direction: "rtl",
                 appearance: "none", outline: "none",
@@ -207,10 +207,10 @@ export default function StudentsPage() {
               background: updateSuccess
                 ? "linear-gradient(135deg,#22c55e,#15803d)"
                 : !selectedExamPoint || selectedExamPoint === selected.exam_points
-                  ? "rgba(255,255,255,0.06)"
+                  ? "var(--elevated)"
                   : "linear-gradient(135deg,#3b82f6,#6d28d9)",
               border: "none", borderRadius: 14,
-              color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "rgba(255,255,255,0.3)" : "#fff",
+              color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "var(--text-mute)" : "#fff",
               fontWeight: 800, fontSize: 15, cursor: !selectedExamPoint ? "not-allowed" : "pointer",
               fontFamily: "inherit", transition: "all 0.2s",
             }}
@@ -226,7 +226,7 @@ export default function StudentsPage() {
 
           {/* Deselect */}
           <button onClick={() => { setSelected(null); setSelectedExamPoint(""); setUpdateSuccess(false); }}
-            style={{ width: "100%", marginTop: 12, padding: "10px 0", background: "none", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, color: "rgba(255,255,255,0.3)", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
+            style={{ width: "100%", marginTop: 12, padding: "10px 0", background: "none", border: "1px solid var(--border)", borderRadius: 12, color: "var(--text-mute)", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
             إلغاء الاختيار
           </button>
         </div>
@@ -238,8 +238,8 @@ export default function StudentsPage() {
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 16px" }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ color: "#fff", fontWeight: 900, fontSize: 24, margin: 0 }}>بحث الطلاب</h1>
-        <p style={{ color: "rgba(255,255,255,0.4)", margin: "4px 0 0", fontSize: 13 }}>
+        <h1 style={{ color: "var(--text-main)", fontWeight: 900, fontSize: 24, margin: 0 }}>بحث الطلاب</h1>
+        <p style={{ color: "var(--text-dim)", margin: "4px 0 0", fontSize: 13 }}>
           ابحث عن طالب ← اختره ← عدّل قاعة الامتحان
         </p>
       </div>
@@ -255,17 +255,17 @@ export default function StudentsPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: "50%",
-                  background: done ? "#22c55e" : current ? "linear-gradient(135deg,#3b82f6,#6d28d9)" : "rgba(255,255,255,0.08)",
+                  background: done ? "#22c55e" : current ? "var(--accent)" : "var(--elevated)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: active ? "#fff" : "rgba(255,255,255,0.3)",
+                  color: active ? "#fff" : "var(--text-mute)",
                   fontWeight: 800, fontSize: 12,
                   transition: "all 0.3s",
                 }}>
                   {done ? "✓" : i + 1}
                 </div>
-                <span className="step-label" style={{ color: active ? "#fff" : "rgba(255,255,255,0.3)", fontWeight: 600, fontSize: 13 }}>{label}</span>
+                <span className="step-label" style={{ color: active ? "var(--text-main)" : "var(--text-mute)", fontWeight: 600, fontSize: 13 }}>{label}</span>
               </div>
-              {i < 2 && <div style={{ flex: 1, height: 1, background: i < (selected ? 1 : 0) ? "#3b82f6" : "rgba(255,255,255,0.08)", margin: "0 8px", transition: "all 0.3s" }} />}
+              {i < 2 && <div style={{ flex: 1, height: 1, background: i < (selected ? 1 : 0) ? "var(--accent)" : "var(--border)", margin: "0 8px", transition: "all 0.3s" }} />}
             </React.Fragment>
           );
         })}
@@ -278,8 +278,8 @@ export default function StudentsPage() {
           {/* Search input */}
           <div style={{
             display: "flex", alignItems: "center",
-            background: "rgba(255,255,255,0.04)",
-            border: "2px solid rgba(59,130,246,0.3)",
+            background: "var(--bg)",
+            border: "2px solid var(--border)",
             borderRadius: 16, overflow: "hidden", marginBottom: 16,
           }}>
             <span style={{ padding: "0 16px", fontSize: 20 }}>{searching ? "⏳" : "🔍"}</span>
@@ -290,13 +290,13 @@ export default function StudentsPage() {
               onChange={handleSearchInput}
               style={{
                 flex: 1, padding: "16px 0", background: "transparent",
-                border: "none", outline: "none", color: "#fff",
+                border: "none", outline: "none", color: "var(--text-main)",
                 fontSize: 16, fontFamily: "inherit", direction: "rtl",
               }}
             />
             {searchTerm && (
               <button onClick={() => { setSearchTerm(""); setStudents([]); setSelected(null); setSearchError(""); }}
-                style={{ padding: "0 16px", background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18 }}>✕</button>
+                style={{ padding: "0 16px", background: "none", border: "none", color: "var(--text-mute)", cursor: "pointer", fontSize: 18 }}>✕</button>
             )}
           </div>
 
@@ -321,15 +321,15 @@ export default function StudentsPage() {
                         background: isSelected
                           ? "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(109,40,217,0.15))"
                           : "rgba(255,255,255,0.03)",
-                        border: `2px solid ${isSelected ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.06)"}`,
+                        border: `2px solid ${isSelected ? "var(--accent)" : "var(--border)"}`,
                         borderRadius: 14, padding: "14px 18px", cursor: "pointer",
-                        transition: "all 0.2s", color: "#fff", fontFamily: "inherit",
+                        transition: "all 0.2s", color: "var(--text-main)", fontFamily: "inherit",
                       }}
                     >
                       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{student.student_name}</div>
                       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 12, color: "#93c5fd", fontFamily: "monospace" }}>🪪 {student.student_id}</span>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>📍 {student.exam_points || "غير محددة"}</span>
+                        <span style={{ fontSize: 12, color: "var(--accent)", fontFamily: "monospace" }}>🪪 {student.student_id}</span>
+                        <span style={{ fontSize: 12, color: "var(--text-mute)" }}>📍 {student.exam_points || "غير محددة"}</span>
                         {student.type_of_registration && (
                           <span style={{ fontSize: 12, color: "#c4b5fd", background: "rgba(139,92,246,0.12)", padding: "1px 8px", borderRadius: 50, border: "1px solid rgba(139,92,246,0.25)" }}>
                             {student.type_of_registration}
@@ -347,7 +347,7 @@ export default function StudentsPage() {
 
           {/* Prompt */}
           {students.length === 0 && !searching && !searchError && (
-            <div style={{ textAlign: "center", padding: "48px 0", color: "rgba(255,255,255,0.15)" }}>
+            <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text-mute)" }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>🎓</div>
               <div>ابدأ بكتابة اسم الطالب</div>
             </div>
@@ -381,7 +381,7 @@ export default function StudentsPage() {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        select option { background: #1a1c28; }
+        select option { background: var(--elevated); color: var(--text-main); }
         button:hover:not(:disabled) { opacity: 0.9; }
       `}</style>
     </div>

@@ -14,8 +14,8 @@ export default function UsersHeader() {
     <>
       <Flex justify="space-between" align="center" style={{ marginBottom: 32 }}>
         <div>
-          <Title level={2} style={{ margin: 0, color: "#fff", fontWeight: 900 }}>إدارة المستخدمين</Title>
-          <Text type="secondary">إضافة وتعديل صلاحيات المستخدمين والطلاب في النظام</Text>
+          <Title level={2} style={{ margin: 0, color: "var(--text-main)", fontWeight: 900 }}>إدارة المستخدمين</Title>
+          <Text type="secondary" style={{ color: "var(--text-dim)" }}>تحكم في صلاحيات الوصول وإعدادات الحسابات</Text>
         </div>
         
         <Button 
