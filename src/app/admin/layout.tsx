@@ -226,7 +226,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             padding: 20px !important;
           }
         }
-      `}</style>
+
         .animate-fade {
           animation: fadeUp 0.6s ease-out;
         }
