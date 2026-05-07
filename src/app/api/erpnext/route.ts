@@ -29,7 +29,10 @@ export async function GET(req: NextRequest) {
     if (method === "exam_points") {
       url = `https://${baseUrl}/api/method/${endpoint}.get_available_exam_points`;
     } else if (method === "search" && term) {
-      url = `https://${baseUrl}/api/method/${endpoint}.search_students_by_name?search_term=${encodeURIComponent(term)}`;
+      url = `https://${baseUrl}/api/method/${endpoint}.search_students?search_term=${encodeURIComponent(term)}`;
+    } else if (method === "student_details" && searchParams.get("student_name_id")) {
+      const studentId = searchParams.get("student_name_id");
+      url = `https://${baseUrl}/api/method/${endpoint}.get_student_exam_details?student_name_id=${encodeURIComponent(studentId!)}`;
     } else {
       return NextResponse.json({ error: "Invalid method" }, { status: 400 });
     }

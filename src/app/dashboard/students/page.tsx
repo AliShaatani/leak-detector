@@ -9,6 +9,7 @@ interface Student {
   exam_points: string;
   type_of_registration?: string;
   student_status?: string;
+  can_edit_exam_point?: boolean;
 }
 
 interface ExamPoint {
@@ -30,6 +31,7 @@ export default function StudentsPage() {
   const [selectedExamPoint, setSelectedExamPoint] = useState("");
   const [updating, setUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   const searchTimeout = useRef<any>(null);
 
@@ -73,6 +75,21 @@ export default function StudentsPage() {
     setSelected(student);
     setSelectedExamPoint("");
     setUpdateSuccess(false);
+    setDetailsLoading(true);
+
+    // Fetch full details (Exam point, registration type, can_edit status)
+    try {
+      const res = await fetch(`/api/erpnext?method=student_details&student_name_id=${encodeURIComponent(student.name)}`);
+      const data = await res.json();
+      const inner = data.message || data;
+      if (inner?.status === "success" && inner.data) {
+        setSelected(prev => ({ ...prev!, ...inner.data }));
+      }
+    } catch (err) {
+      console.error("Failed to fetch student details", err);
+    } finally {
+      setDetailsLoading(false);
+    }
 
     if (!examPointsLoaded) {
       setExamPointsLoading(true);
@@ -170,8 +187,12 @@ export default function StudentsPage() {
           {/* Divider */}
           {!isInline && <div style={{ height: 1, background: "var(--border)", marginBottom: 24 }} />}
 
-          {/* Block update if student status is not مستمر */}
-          {selected.student_status && selected.student_status !== "مستمر" ? (
+          {/* Block update if student status is not مستمر or can_edit_exam_point is false */}
+          {detailsLoading ? (
+            <div style={{ textAlign: "center", padding: "20px", color: "var(--text-dim)" }}>
+              ⏳ جاري تحميل التفاصيل...
+            </div>
+          ) : selected.can_edit_exam_point === false ? (
             <div style={{
               background: "rgba(239,68,68,0.08)",
               border: "1px solid rgba(239,68,68,0.25)",
@@ -183,7 +204,7 @@ export default function StudentsPage() {
                 الحالة الدراسية: {selected.student_status}
               </div>
               <div style={{ color: "#fca5a5", fontSize: 13, lineHeight: 1.7 }}>
-                الرجاء مراجعة الادارة لتسوية وضعك الدارسي
+                لا يمكن تعديل نقطة الامتحان لهذا الطالب لأن حالته ليست "مستمر".
               </div>
             </div>
           ) : (
@@ -350,7 +371,6 @@ export default function StudentsPage() {
                       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{student.student_name}</div>
                       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                         <span style={{ fontSize: 12, color: "var(--accent)", fontFamily: "monospace" }}>🪪 {student.student_id}</span>
-                        <span style={{ fontSize: 12, color: "var(--text-mute)" }}>📍 {student.exam_points || "غير محددة"}</span>
                         {student.type_of_registration && (
                           <span style={{ fontSize: 12, color: "#c4b5fd", background: "rgba(139,92,246,0.12)", padding: "1px 8px", borderRadius: 50, border: "1px solid rgba(139,92,246,0.25)" }}>
                             {student.type_of_registration}
