@@ -8,6 +8,7 @@ interface Student {
   student_id: string;
   exam_points: string;
   type_of_registration?: string;
+  student_status?: string;
 }
 
 interface ExamPoint {
@@ -169,59 +170,79 @@ export default function StudentsPage() {
           {/* Divider */}
           {!isInline && <div style={{ height: 1, background: "var(--border)", marginBottom: 24 }} />}
 
-          {/* New exam point selector */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: "var(--text-dim)", marginBottom: 10, fontWeight: 600 }}>
-              اختر القاعة الجديدة
+          {/* Block update if student status is not مستمر */}
+          {selected.student_status && selected.student_status !== "مستمر" ? (
+            <div style={{
+              background: "rgba(239,68,68,0.08)",
+              border: "1px solid rgba(239,68,68,0.25)",
+              borderRadius: 14, padding: "20px 18px",
+              textAlign: "center", marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>⚠️</div>
+              <div style={{ color: "#fca5a5", fontWeight: 700, fontSize: 15, marginBottom: 6 }}>
+                الحالة الدراسية: {selected.student_status}
+              </div>
+              <div style={{ color: "#fca5a5", fontSize: 13, lineHeight: 1.7 }}>
+                الرجاء مراجعة الادارة لتسوية وضعك الدارسي
+              </div>
             </div>
-            <select
-              value={selectedExamPoint}
-              onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
-              disabled={examPointsLoading}
-              style={{
-                width: "100%", background: "var(--bg)",
-                border: "1px solid var(--border)",
-                borderRadius: 12, color: "var(--text-main)",
-                padding: "12px 16px", fontSize: 14,
-                cursor: "pointer", fontFamily: "inherit", direction: "rtl",
-                appearance: "none", outline: "none",
-              }}
-            >
-              <option value="" disabled style={{ background: "#1a1c28" }}>
-                {examPointsLoading ? "جاري تحميل القاعات..." : "اختر قاعة..."}
-              </option>
-              {examPoints.map(ep => (
-                <option key={ep.name} value={ep.name} style={{ background: "#1a1c28" }}>
-                  {ep.title || ep.name}{ep.city ? ` — ${ep.city}` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+          ) : (
+            <>
+              {/* New exam point selector */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, color: "var(--text-dim)", marginBottom: 10, fontWeight: 600 }}>
+                  اختر القاعة الجديدة
+                </div>
+                <select
+                  value={selectedExamPoint}
+                  onChange={e => { setSelectedExamPoint(e.target.value); setUpdateSuccess(false); }}
+                  disabled={examPointsLoading}
+                  style={{
+                    width: "100%", background: "var(--bg)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 12, color: "var(--text-main)",
+                    padding: "12px 16px", fontSize: 14,
+                    cursor: "pointer", fontFamily: "inherit", direction: "rtl",
+                    appearance: "none", outline: "none",
+                  }}
+                >
+                  <option value="" disabled style={{ background: "#1a1c28" }}>
+                    {examPointsLoading ? "جاري تحميل القاعات..." : "اختر قاعة..."}
+                  </option>
+                  {examPoints.map(ep => (
+                    <option key={ep.name} value={ep.name} style={{ background: "#1a1c28" }}>
+                      {ep.title || ep.name}{ep.city ? ` — ${ep.city}` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {/* Update button */}
-          <button
-            onClick={handleUpdate}
-            disabled={!selectedExamPoint || updating || selectedExamPoint === selected.exam_points}
-            style={{
-              width: "100%", padding: "14px 0",
-              background: updateSuccess
-                ? "linear-gradient(135deg,#22c55e,#15803d)"
-                : !selectedExamPoint || selectedExamPoint === selected.exam_points
-                  ? "var(--elevated)"
-                  : "linear-gradient(135deg,#3b82f6,#6d28d9)",
-              border: "none", borderRadius: 14,
-              color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "var(--text-mute)" : "#fff",
-              fontWeight: 800, fontSize: 15, cursor: !selectedExamPoint ? "not-allowed" : "pointer",
-              fontFamily: "inherit", transition: "all 0.2s",
-            }}
-          >
-            {updating ? "⏳ جاري التحديث..." : updateSuccess ? "✓ تم التحديث بنجاح" : "تحديث قاعة الامتحان"}
-          </button>
+              {/* Update button */}
+              <button
+                onClick={handleUpdate}
+                disabled={!selectedExamPoint || updating || selectedExamPoint === selected.exam_points}
+                style={{
+                  width: "100%", padding: "14px 0",
+                  background: updateSuccess
+                    ? "linear-gradient(135deg,#22c55e,#15803d)"
+                    : !selectedExamPoint || selectedExamPoint === selected.exam_points
+                      ? "var(--elevated)"
+                      : "linear-gradient(135deg,#3b82f6,#6d28d9)",
+                  border: "none", borderRadius: 14,
+                  color: !selectedExamPoint || selectedExamPoint === selected.exam_points ? "var(--text-mute)" : "#fff",
+                  fontWeight: 800, fontSize: 15, cursor: !selectedExamPoint ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", transition: "all 0.2s",
+                }}
+              >
+                {updating ? "⏳ جاري التحديث..." : updateSuccess ? "✓ تم التحديث بنجاح" : "تحديث قاعة الامتحان"}
+              </button>
 
-          {updateSuccess && (
-            <div style={{ textAlign: "center", marginTop: 12, color: "#86efac", fontSize: 13 }}>
-              تم تحديث قاعة الامتحان في نظام ERPNext
-            </div>
+              {updateSuccess && (
+                <div style={{ textAlign: "center", marginTop: 12, color: "#86efac", fontSize: 13 }}>
+                  تم تحديث قاعة الامتحان في نظام ERPNext
+                </div>
+              )}
+            </>
           )}
 
           {/* Deselect */}
@@ -285,7 +306,7 @@ export default function StudentsPage() {
             <span style={{ padding: "0 16px", fontSize: 20 }}>{searching ? "⏳" : "🔍"}</span>
             <input
               type="text"
-              placeholder="اكتب اسم الطالب..."
+              placeholder="اكتب اسم الطالب أو رقم الهوية..."
               value={searchTerm}
               onChange={handleSearchInput}
               style={{
@@ -333,6 +354,17 @@ export default function StudentsPage() {
                         {student.type_of_registration && (
                           <span style={{ fontSize: 12, color: "#c4b5fd", background: "rgba(139,92,246,0.12)", padding: "1px 8px", borderRadius: 50, border: "1px solid rgba(139,92,246,0.25)" }}>
                             {student.type_of_registration}
+                          </span>
+                        )}
+                        {student.student_status && (
+                          <span style={{
+                            fontSize: 12,
+                            color: student.student_status === "مستمر" ? "#86efac" : "#fca5a5",
+                            background: student.student_status === "مستمر" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
+                            padding: "1px 8px", borderRadius: 50,
+                            border: `1px solid ${student.student_status === "مستمر" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`
+                          }}>
+                            {student.student_status === "مستمر" ? "✓" : "⚠"} {student.student_status}
                           </span>
                         )}
                       </div>
