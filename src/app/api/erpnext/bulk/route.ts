@@ -32,16 +32,22 @@ export async function GET(req: NextRequest) {
     }
 
     const url = `https://${baseUrl}/api/method/${erpMethod}?${params.toString()}`;
+    console.log(`[ERPNext Bulk API] Fetching: ${url}`);
+    
     const res = await fetch(url, {
       headers: { Authorization: `token ${token}` },
     });
     
     const data = await res.json();
+    console.log(`[ERPNext Bulk API] Response Status: ${res.status}`);
+    
     if (!res.ok) {
+      console.error(`[ERPNext Bulk API] Error Body:`, JSON.stringify(data, null, 2));
       return NextResponse.json({ error: data.message || "ERPNext error" }, { status: res.status });
     }
     return NextResponse.json(data.message || data);
   } catch (err: any) {
+    console.error(`[ERPNext Bulk API] Runtime Error:`, err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
