@@ -9,7 +9,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "ترميز ملفات الـ PDF | كلية الإمام مالك",
+  title: "نظام توزيع نماذج الامتحان وادارة الطلاب | كلية الإمام مالك",
   description: "نظام تتبع وتأمين الوثائق عبر رموز QR الديناميكية",
 };
 
