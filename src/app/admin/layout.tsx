@@ -6,7 +6,7 @@ import { LayoutDashboard, Users, FileText, Settings, LogOut } from "lucide-react
 import { usePathname } from "next/navigation";
 import AntdConfig from "@/components/AntdConfig";
 import { Layout, Menu, Avatar, Flex, Typography, Button, Space, Drawer } from "antd";
-import { FolderOpenOutlined, TeamOutlined, ScanOutlined } from "@ant-design/icons";
+import { FolderOpenOutlined, TeamOutlined, ScanOutlined, DatabaseOutlined } from "@ant-design/icons";
 
 const { Sider, Content, Header } = Layout;
 const { Text, Title } = Typography;
@@ -39,6 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { key: "/admin/users", label: "إدارة المستخدمين", icon: <Users size={18} /> },
     { key: "/admin/categories", label: "تصنيفات الملفات", icon: <FolderOpenOutlined size={18} /> },
     { key: "/admin/files", label: "إدارة الملفات", icon: <FileText size={18} /> },
+    { key: "/admin/assessments", label: "رصد الدرجات", icon: <DatabaseOutlined style={{ fontSize: 18 }} /> },
     { key: "/admin/groups", label: "المجموعات", icon: <TeamOutlined style={{ fontSize: 18 }} /> },
     { key: "/admin/scan", label: "كاشف التسريبات", icon: <ScanOutlined style={{ fontSize: 18 }} /> },
     { key: "/admin/settings", label: "الإعدادات", icon: <Settings size={18} /> },
