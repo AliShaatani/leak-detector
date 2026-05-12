@@ -43,7 +43,9 @@ export async function GET(req: NextRequest) {
     
     if (!res.ok) {
       console.error(`[ERPNext Bulk API] Error Body:`, JSON.stringify(data, null, 2));
-      return NextResponse.json({ error: data.message || "ERPNext error" }, { status: res.status });
+      // Return the actual message from ERPNext if available, otherwise return the whole data object
+      const errorMessage = data.message || (data._server_messages ? JSON.parse(data._server_messages).join('\n') : null) || data.error || JSON.stringify(data);
+      return NextResponse.json({ error: errorMessage }, { status: res.status });
     }
     return NextResponse.json(data.message || data);
   } catch (err: any) {
