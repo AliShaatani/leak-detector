@@ -17,10 +17,10 @@ export async function GET(req: NextRequest) {
     let params = new URLSearchParams();
 
     if (method === "metadata" && assessment_plan) {
-      erpMethod = "education.education.bulk_api.get_bulk_upload_metadata";
+      erpMethod = "education.bulk_api.get_bulk_upload_metadata";
       params.append("assessment_plan", assessment_plan);
     } else if (method === "students" && assessment_plan && student_group) {
-      erpMethod = "education.education.bulk_api.get_assessment_students";
+      erpMethod = "education.bulk_api.get_assessment_students";
       params.append("assessment_plan", assessment_plan);
       params.append("student_group", student_group);
     } else if (method === "search_plans") {
@@ -68,10 +68,10 @@ export async function POST(req: NextRequest) {
     let payload: any = { assessment_plan };
 
     if (method === "process_json" && assessment_plan && scores_data) {
-      erpMethod = "education.education.bulk_api.process_bulk_json_scores";
+      erpMethod = "education.bulk_api.process_bulk_json_scores";
       payload.scores_data = scores_data;
     } else if (method === "process_excel" && assessment_plan && file_url) {
-      erpMethod = "education.education.bulk_api.process_bulk_excel_scores";
+      erpMethod = "education.bulk_api.process_bulk_excel_scores";
       payload.file_url = file_url;
     } else {
       return NextResponse.json({ error: "Invalid method or missing parameters" }, { status: 400 });
