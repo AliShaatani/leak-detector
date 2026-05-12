@@ -33,14 +33,14 @@ export async function GET(req: NextRequest) {
 
     const url = `https://${baseUrl}/api/method/${erpMethod}?${params.toString()}`;
     console.log(`[ERPNext Bulk API] Fetching: ${url}`);
-    
+
     const res = await fetch(url, {
       headers: { Authorization: `token ${token}` },
     });
-    
+
     const data = await res.json();
     console.log(`[ERPNext Bulk API] Response Status: ${res.status}`);
-    
+
     if (!res.ok) {
       console.error(`[ERPNext Bulk API] Error Body:`, JSON.stringify(data, null, 2));
       // Return the actual message from ERPNext if available, otherwise return the whole data object
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { method, assessment_plan, scores_data, file_url } = body;
+    const { method, assessment_plan, scores_data, file_url, zero_missing } = body;
 
     const { baseUrl, token } = await getErpSettings();
     if (!baseUrl || !token) {
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     }
 
     let erpMethod = "";
-    let payload: any = { assessment_plan };
+    let payload: any = { assessment_plan, zero_missing };
 
     if (method === "process_json" && assessment_plan && scores_data) {
       erpMethod = "education.bulk_api.process_bulk_json_scores";

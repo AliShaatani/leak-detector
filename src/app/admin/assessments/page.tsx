@@ -47,6 +47,7 @@ export default function BulkAssessmentPage() {
   const [localParsing, setLocalParsing] = useState(true);
   const [errorData, setErrorData] = useState<any[] | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [zeroMissing, setZeroMissing] = useState(false);
 
   const searchPlans = async (term: string) => {
     try {
@@ -130,7 +131,8 @@ export default function BulkAssessmentPage() {
         body: JSON.stringify({
           method: "process_json",
           assessment_plan: selectedPlan,
-          scores_data: scores
+          scores_data: scores,
+          zero_missing: zeroMissing ? 1 : 0
         })
       });
 
@@ -205,7 +207,18 @@ export default function BulkAssessmentPage() {
             <Title level={2} style={{ margin: 0, fontWeight: 900 }}>Bulk Assessments</Title>
             <Text type="secondary">Import and verify student scores from external files.</Text>
           </div>
-          <Space>
+          <Space size={20}>
+            <Space>
+              <Text style={{ fontSize: 13 }}>Zeroing Empty Students</Text>
+              <Switch 
+                checked={zeroMissing} 
+                onChange={setZeroMissing} 
+                size="small"
+                checkedChildren="ON"
+                unCheckedChildren="OFF"
+              />
+            </Space>
+            <Divider type="vertical" />
             <Switch 
               checkedChildren="Local" 
               unCheckedChildren="Server" 
@@ -297,6 +310,7 @@ export default function BulkAssessmentPage() {
                   dataSource={errorData.map((err, i) => ({ ...err, key: i }))}
                   columns={[
                     { title: "ID", dataIndex: "student_id", width: 120 },
+                    { title: "Name", dataIndex: "student_name", render: (n) => n || <Text type="secondary">Unknown</Text> },
                     { title: "Reason", dataIndex: "reason", render: (r) => <Tag color="error">{r}</Tag> }
                   ]}
                   size="small"
