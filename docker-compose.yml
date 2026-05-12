@@ -3,7 +3,7 @@ services:
   # ── PostgreSQL Database ─────────────────────────────────────────────────────
   db:
     image: postgres:16-alpine
-    container_name: pdf_tracker_db
+    container_name: pdf_tracker_db_dev
     restart: unless-stopped
     env_file:
       - .env
@@ -14,7 +14,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - app-network
     healthcheck:
@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pdf_tracker_app
+    container_name: pdf_tracker_app_dev
     restart: unless-stopped
     env_file:
       - .env
@@ -55,7 +55,7 @@ services:
     build:
       context: ./docker/nginx
       dockerfile: Dockerfile
-    container_name: pdf_tracker_nginx
+    container_name: pdf_tracker_nginx_dev
     restart: unless-stopped
     depends_on:
       app:
