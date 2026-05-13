@@ -270,10 +270,10 @@ export default function BulkAssessmentPage() {
 
             {metadata && (
               <Flex gap={24} className="metadata-strip" style={{ 
-                background: "#f8fafc", 
+                background: "var(--elevated)", 
                 padding: "16px 24px", 
                 borderRadius: 16,
-                border: "1px solid #e2e8f0"
+                border: "1px solid var(--border)"
               }}>
                 <div>
                   <Text type="secondary" style={{ fontSize: 11 }}>المقرر</Text>
