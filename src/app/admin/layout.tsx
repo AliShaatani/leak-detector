@@ -23,7 +23,6 @@ import {
 const { Sider, Content, Header } = Layout;
 const { Text, Title } = Typography;
 
-// Define menu items outside to ensure stability
 const NAV_ITEMS = [
   { key: "/admin", label: "لوحة التحكم", icon: <DashboardOutlined /> },
   { key: "/admin/users", label: "إدارة المستخدمين", icon: <UserOutlined /> },
@@ -43,7 +42,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isDark, setIsDark] = React.useState(true); 
   const [isReady, setIsReady] = React.useState(false);
 
-  // Normalize pathname to remove trailing slashes for exact menu matching
   const activeKey = pathname === "/admin" ? "/admin" : pathname.replace(/\/$/, "");
 
   React.useEffect(() => {
@@ -120,6 +118,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 
+  const sidebarWidth = collapsed ? 80 : 280;
+
   return (
     <AntdConfig isDark={isDark}>
       <Layout style={{ minHeight: "100vh" }}>
@@ -143,7 +143,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {sidebarContent}
         </Sider>
 
-        {/* Mobile Sidebar */}
         <Drawer
           placement="right"
           onClose={() => setMobileVisible(false)}
@@ -156,11 +155,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Drawer>
 
         <Layout style={{ 
-          marginRight: collapsed ? 80 : 280, 
+          marginRight: sidebarWidth, 
           transition: "margin-right 0.2s",
-          background: "var(--bg)" 
-        }}>
-          {/* Mobile Header */}
+          background: "var(--bg)",
+          // RESTORE THE CSS VARIABLE FOR CHILDREN (PdfPositioner, etc)
+          "--sidebar-width": `${sidebarWidth}px`
+        } as React.CSSProperties}>
           <div className="mobile-header">
              <Button 
               type="text" 
@@ -209,7 +209,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <Content style={{ padding: "0 40px 40px", overflow: "initial" }}>
             <div className="animate-fade">
-              {isReady ? children : <div style={{ height: "50vh" }} />}
+              {/* Ensure children render immediately if ready to avoid state loss */}
+              {isReady && children}
             </div>
           </Content>
         </Layout>
@@ -222,7 +223,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           width: calc(100% - 24px) !important;
           transition: all 0.2s ease !important;
         }
-        /* Fix sticking grey backgrounds */
         .ant-menu-item:not(.ant-menu-item-selected):active,
         .ant-menu-item:not(.ant-menu-item-selected):focus {
           background: transparent !important;
