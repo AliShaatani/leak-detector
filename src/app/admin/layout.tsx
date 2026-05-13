@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileVisible, setMobileVisible] = React.useState(false);
   
   // Initialize theme from localStorage if available, default to dark
-  const [isDark, setIsDark] = React.useState(True); 
+  const [isDark, setIsDark] = React.useState(true); 
   const [isReady, setIsReady] = React.useState(false);
 
   // Sync theme and check auth
