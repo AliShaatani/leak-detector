@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import AntdConfig from "@/components/AntdConfig";
-import { Layout, Menu, Avatar, Flex, Typography, Button, Space, Drawer, ConfigProvider, theme } from "antd";
+import { Layout, Menu, Avatar, Flex, Typography, Button, Space, Drawer } from "antd";
 import { 
   DashboardOutlined, 
   UserOutlined, 
@@ -53,6 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
+  // Ensure these paths match your folder structure exactly
   const menuItems = [
     { key: "/admin", label: "لوحة التحكم", icon: <DashboardOutlined /> },
     { key: "/admin/users", label: "إدارة المستخدمين", icon: <UserOutlined /> },
@@ -85,13 +85,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         mode="inline"
         selectedKeys={[pathname]}
         style={{ borderRight: 0, background: "transparent", flex: 1 }}
-        items={menuItems.map(item => ({
-          ...item,
-          onClick: () => {
-            router.push(item.key);
-            setMobileVisible(false);
-          }
-        }))}
+        items={menuItems}
+        onClick={({ key }) => {
+          router.push(key);
+          if (mobileVisible) setMobileVisible(false);
+        }}
       />
 
       <div style={{ padding: "16px" }}>
@@ -104,7 +102,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             localStorage.clear();
             router.replace("/");
           }}
-          style={{ height: 45, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: collapsed ? "center" : "flex-start", paddingLeft: collapsed ? 0 : 20 }}
+          style={{ 
+            height: 45, 
+            borderRadius: 12, 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: collapsed ? "center" : "flex-start",
+            paddingLeft: collapsed ? 0 : 20 
+          }}
         >
           {!collapsed && "تسجيل الخروج"}
         </Button>
@@ -211,21 +216,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </Layout>
 
       <style jsx global>{`
+        /* Removed custom CSS overrides that caused "sticky" grey backgrounds */
         .ant-menu-item {
-          height: 50px !important;
-          line-height: 50px !important;
           border-radius: 12px !important;
           margin: 4px 12px !important;
           width: calc(100% - 24px) !important;
-          font-weight: 600;
-        }
-        .ant-menu-item-selected {
-          background: var(--accent) !important;
-          color: #fff !important;
-          box-shadow: 0 4px 12px var(--accent-glow);
-        }
-        .ant-menu-item:hover:not(.ant-menu-item-selected) {
-          background: var(--border) !important;
         }
         .mobile-header {
           display: none;
@@ -247,7 +242,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           .ant-layout { marginRight: 0 !important; }
           .mobile-header { display: flex; }
           .desktop-header { display: none !important; }
-          .main-content { padding: 20px !important; }
         }
         .animate-fade { animation: fadeUp 0.6s ease-out; }
         @keyframes fadeUp {
