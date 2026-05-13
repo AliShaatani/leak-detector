@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { LayoutDashboard, Users, FileText, Settings, LogOut } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AntdConfig from "@/components/AntdConfig";
 import { Layout, Menu, Avatar, Flex, Typography, Button, Space, Drawer } from "antd";
 import { FolderOpenOutlined, TeamOutlined, ScanOutlined, DatabaseOutlined } from "@ant-design/icons";
@@ -13,26 +13,39 @@ const { Text, Title } = Typography;
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileVisible, setMobileVisible] = React.useState(false);
-  const [isDark, setIsDark] = React.useState(true);
+  
+  // Initialize theme from localStorage if available, default to dark
+  const [isDark, setIsDark] = React.useState(True); 
   const [isReady, setIsReady] = React.useState(false);
 
   // Sync theme and check auth
   React.useEffect(() => {
+    // Auth Check
     const userId = localStorage.getItem("user_id");
     const userRole = localStorage.getItem("user_role");
 
     if (!userId || userRole !== "ADMIN") {
-      window.location.href = "/";
+      router.replace("/");
       return;
     }
-    
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    setIsReady(true);
-  }, [isDark]);
 
-  if (!isReady) return null;
+    // Theme Check
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+    }
+    
+    setIsReady(true);
+  }, [router]);
+
+  // Update theme on change
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   const navItems = [
     { key: "/admin", label: "لوحة التحكم", icon: <LayoutDashboard size={18} /> },
@@ -46,19 +59,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   const sidebarContent = (forceShowLabels = false) => (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ padding: "0 24px 40px", textAlign: "center" }}>
         <img 
           src={isDark ? "/logo.png" : "/logo-black.png"} 
           onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png" }}
           alt="Logo" 
-          style={{ width: 60, marginBottom: 16, marginTop: 10 }} 
+          style={{ width: 60, height: "auto", marginBottom: 16, marginTop: 10 }} 
         />
         <Title level={4} style={{ color: "var(--text-main)", margin: 0, fontWeight: 800 }}>لوحة الإشراف</Title>
         <Text type="secondary" style={{ fontSize: 12, color: "var(--text-dim)" }}>نظام الإدارة الذكي</Text>
       </div>
 
-      <div style={{ padding: "0 12px" }}>
+      <div style={{ padding: "0 12px", flex: 1 }}>
         {navItems.map((item) => (
           <Link key={item.key} href={item.key} onClick={() => setMobileVisible(false)}>
             <div className={`custom-nav-item ${pathname === item.key ? "active" : ""}`}>
@@ -69,17 +82,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         ))}
       </div>
 
-      <div style={{ position: "absolute", bottom: 40, width: "100%", padding: "0 12px" }}>
-        <Link href="/">
+      <div style={{ padding: "20px 12px 40px" }}>
+        <Link href="/" onClick={() => localStorage.clear()}>
           <div className="custom-nav-item logout">
             <LogOut size={18} />
             {(forceShowLabels || !collapsed) && <span>تسجيل الخروج</span>}
           </div>
         </Link>
       </div>
-    </>
+    </div>
   );
 
+  // Still render the layout structure even if not ready to prevent jumping/flickering
+  // But hide children until auth is confirmed
   return (
     <AntdConfig isDark={isDark}>
       <Layout style={{ minHeight: "100vh", background: "var(--bg)", transition: "background 0.3s ease" }}>
@@ -94,7 +109,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Title level={5} style={{ color: "var(--text-main)", margin: 0 }}>نظام التسريبات</Title>
           <Button 
             shape="circle" 
-            icon={isDark ? <LayoutDashboard size={18} /> : <ScanOutlined size={18} />} 
+            icon={isDark ? "☀️" : "🌙"} 
             onClick={() => setIsDark(!isDark)}
           />
         </div>
@@ -161,7 +176,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Flex align="center" gap={12} className="user-badge">
                 <Flex vertical align="flex-end" gap={0}>
                   <Text strong style={{ color: "var(--text-main)", lineHeight: 1 }}>المشرف الرئيسي</Text>
-                  <Text type="secondary" style={{ fontSize: 11, color: "var(--text-dim)" }}>ID: ADMIN_001</Text>
+                  <Text type="secondary" style={{ fontSize: 11, color: "var(--text-dim)" }}>معرف: ADMIN_001</Text>
                 </Flex>
                 <Avatar size={40} style={{ background: "var(--accent)", fontWeight: 800 }}>A</Avatar>
               </Flex>
@@ -170,7 +185,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <Content className="main-content" style={{ padding: "0 40px 40px" }}>
             <div className="animate-fade">
-              {children}
+              {isReady ? children : <div style={{ height: "50vh" }} />}
             </div>
           </Content>
         </Layout>
