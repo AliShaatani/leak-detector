@@ -53,6 +53,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return;
     }
 
+    // Verify session against DB to prevent 403 errors
+    fetch(`/api/users/${userId}`).then(res => {
+      if (!res.ok) {
+        localStorage.clear();
+        router.replace("/");
+      }
+    });
+
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       setIsDark(savedTheme === "dark");

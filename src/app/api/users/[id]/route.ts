@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// GET /api/users/[id] - Verify user
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const user = await db.user.findUnique({ where: { id } });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json({ id: user.id, role: user.role, name: user.name });
+  } catch (error) {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+
 // DELETE /api/users/[id] - Delete a user
 export async function DELETE(
   req: NextRequest,
