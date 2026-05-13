@@ -27,6 +27,7 @@ interface Criterion {
 interface Student {
   student: string;
   student_name: string;
+  numeric_id?: string;
   assessment_details: Record<string, [number | string, string]> | null;
   docstatus: number;
 }
@@ -57,7 +58,7 @@ export default function BulkAssessmentPage() {
         setPlans(data.map(p => ({ value: p.value, label: p.value + (p.description ? ` - ${p.description}` : '') })));
       }
     } catch (err) {
-      console.error("Search failed", err);
+      console.error("فشل البحث", err);
     }
   };
 
@@ -72,10 +73,10 @@ export default function BulkAssessmentPage() {
         setMetadata(data);
         fetchStudents(plan, data.student_group);
       } else {
-        message.error(data.error || "Failed to fetch metadata");
+        message.error(data.error || "فشل في جلب البيانات الوصفية");
       }
     } catch (err) {
-      message.error("Request failed");
+      message.error("فشل الطلب");
     } finally {
       setLoading(false);
     }
@@ -94,13 +95,6 @@ export default function BulkAssessmentPage() {
   };
 
   const handleFileUpload = (file: File) => {
-    if (!localParsing) {
-      // Server-side parsing would typically upload to a bucket then send URL
-      // For this demo/requirement, we'll focus on the API interaction
-      message.info("Server-side parsing selected. In production, this would upload the file first.");
-      return false;
-    }
-
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
@@ -112,7 +106,7 @@ export default function BulkAssessmentPage() {
         
         processScores(data);
       } catch (err) {
-        message.error("Failed to parse Excel file");
+        message.error("فشل في تحليل ملف Excel");
       }
     };
     reader.readAsBinaryString(file);
@@ -138,22 +132,23 @@ export default function BulkAssessmentPage() {
 
       const data = await res.json();
       if (data.status === "success") {
-        message.success(`Successfully processed ${data.processed_count} scores`);
+        message.success(`تمت معالجة ${data.processed_count} درجة بنجاح`);
         fetchStudents(selectedPlan, metadata!.student_group);
       } else if (data.status === "error") {
         if (data.missing_students) {
           setErrorData(data.missing_students);
           Modal.error({
-            title: "Validation Failed: Missing Students",
-            content: "The uploaded file contains students who are not in the selected Student Group. Please see the error table below.",
-            width: 600
+            title: "فشل التحقق: طلاب مفقودون",
+            content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى مراجعة جدول الأخطاء أدناه.",
+            width: 600,
+            okText: "حسناً"
           });
         } else {
-          message.error(data.message || "Failed to process scores");
+          message.error(data.message || "فشل في معالجة الدرجات");
         }
       }
     } catch (err) {
-      message.error("Upload failed");
+      message.error("فشل الرفع");
     } finally {
       setUploading(false);
     }
@@ -161,13 +156,14 @@ export default function BulkAssessmentPage() {
 
   const columns = [
     {
-      title: "Student ID",
-      dataIndex: "student",
-      key: "student",
-      width: 150,
+      title: "رقم الطالب",
+      dataIndex: "numeric_id",
+      key: "numeric_id",
+      width: 120,
+      render: (id: string, record: Student) => id || <Text type="secondary">{record.student}</Text>
     },
     {
-      title: "Student Name",
+      title: "اسم الطالب",
       dataIndex: "student_name",
       key: "student_name",
       ellipsis: true,
@@ -188,49 +184,44 @@ export default function BulkAssessmentPage() {
       }
     })),
     {
-      title: "Status",
+      title: "الحالة",
       dataIndex: "docstatus",
       key: "status",
+      width: 100,
       render: (status: number) => (
         status === 1 
-          ? <Tag color="success">Submitted</Tag> 
-          : <Tag color="warning">Draft</Tag>
+          ? <Tag color="success">تم التسليم</Tag> 
+          : <Tag color="warning">مسودة</Tag>
       )
     }
   ];
 
   return (
-    <div className="animate-fade">
+    <div className="animate-fade" dir="rtl">
       <Flex vertical gap={24}>
         <Flex justify="space-between" align="center">
           <div>
-            <Title level={2} style={{ margin: 0, fontWeight: 900 }}>Bulk Assessments</Title>
-            <Text type="secondary">Import and verify student scores from external files.</Text>
+            <Title level={2} style={{ margin: 0, fontWeight: 900 }}>الرفع الجماعي للدرجات</Title>
+            <Text type="secondary">استيراد والتحقق من درجات الطلاب من ملفات خارجية.</Text>
           </div>
           <Space size={20}>
             <Space>
-              <Text style={{ fontSize: 13 }}>Zeroing Empty Students</Text>
+              <Text style={{ fontSize: 13 }}>تصفير الطلاب المفقودين</Text>
               <Switch 
                 checked={zeroMissing} 
                 onChange={setZeroMissing} 
                 size="small"
-                checkedChildren="ON"
-                unCheckedChildren="OFF"
+                checkedChildren="نعم"
+                unCheckedChildren="لا"
               />
             </Space>
             <Divider type="vertical" />
-            <Switch 
-              checkedChildren="Local" 
-              unCheckedChildren="Server" 
-              checked={localParsing} 
-              onChange={setLocalParsing} 
-            />
             <Button 
               icon={<SearchOutlined />} 
               onClick={() => selectedPlan && fetchStudents(selectedPlan, metadata!.student_group)}
               disabled={!selectedPlan}
             >
-              Refresh Scores
+              تحديث الدرجات
             </Button>
           </Space>
         </Flex>
@@ -239,10 +230,10 @@ export default function BulkAssessmentPage() {
           <Space direction="vertical" size={20} style={{ width: "100%" }}>
             <Flex gap={16} align="flex-end">
               <div style={{ flex: 1 }}>
-                <Text strong style={{ display: "block", marginBottom: 8 }}>Select Assessment Plan</Text>
+                <Text strong style={{ display: "block", marginBottom: 8 }}>اختر خطة التقييم</Text>
                 <Select
                   showSearch
-                  placeholder="Type plan name or ID..."
+                  placeholder="ابحث عن الخطة..."
                   style={{ width: "100%" }}
                   size="large"
                   loading={loading}
@@ -269,31 +260,31 @@ export default function BulkAssessmentPage() {
                   disabled={!selectedPlan}
                   style={{ borderRadius: 12, padding: "0 30px" }}
                 >
-                  Upload Excel
+                  رفع ملف Excel
                 </Button>
               </Upload>
             </Flex>
 
             {metadata && (
               <Flex gap={24} className="metadata-strip" style={{ 
-                background: "var(--bg)", 
+                background: "#f8fafc", 
                 padding: "16px 24px", 
                 borderRadius: 16,
-                border: "1px solid var(--border)"
+                border: "1px solid #e2e8f0"
               }}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: 11 }}>COURSE</Text>
-                  <Text strong style={{ display: "block" }}>{metadata.course_name} ({metadata.course_code})</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>المقرر</Text>
+                  <Text strong style={{ display: "block" }}>{metadata.course_name}</Text>
                 </div>
                 <Divider type="vertical" style={{ height: 40 }} />
                 <div>
-                  <Text type="secondary" style={{ fontSize: 11 }}>STUDENT GROUP</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>مجموعة الطلاب</Text>
                   <Text strong style={{ display: "block" }}>{metadata.student_group}</Text>
                 </div>
                 <Divider type="vertical" style={{ height: 40 }} />
                 <div>
-                  <Text type="secondary" style={{ fontSize: 11 }}>ENROLLED</Text>
-                  <Text strong style={{ display: "block" }}>{students.length} Students</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>المقيدون</Text>
+                  <Text strong style={{ display: "block" }}>{students.length} طالب</Text>
                 </div>
               </Flex>
             )}
@@ -302,16 +293,16 @@ export default function BulkAssessmentPage() {
 
         {errorData && (
           <Alert
-            message="Validation Errors"
+            message="أخطاء في التحقق"
             description={
               <Space direction="vertical" style={{ width: "100%", marginTop: 10 }}>
-                <Text>The following records in your file could not be processed:</Text>
+                <Text>السجلات التالية في ملفك لم يتم معالجتها:</Text>
                 <Table
                   dataSource={errorData.map((err, i) => ({ ...err, key: i }))}
                   columns={[
-                    { title: "ID", dataIndex: "student_id", width: 120 },
-                    { title: "Name", dataIndex: "student_name", render: (n) => n || <Text type="secondary">Unknown</Text> },
-                    { title: "Reason", dataIndex: "reason", render: (r) => <Tag color="error">{r}</Tag> }
+                    { title: "الرقم", dataIndex: "student_id", width: 120 },
+                    { title: "الاسم", dataIndex: "student_name", render: (n) => n || <Text type="secondary">غير معروف</Text> },
+                    { title: "السبب", dataIndex: "reason", render: (r) => <Tag color="error">{r}</Tag> }
                   ]}
                   size="small"
                   pagination={{ pageSize: 5 }}
@@ -332,7 +323,7 @@ export default function BulkAssessmentPage() {
           bordered
           pagination={{ pageSize: 20 }}
           style={{ borderRadius: 24, overflow: "hidden" }}
-          locale={{ emptyText: <Empty description="Select a plan to see students" /> }}
+          locale={{ emptyText: <Empty description="اختر خطة لعرض الطلاب" /> }}
         />
       </Flex>
 
