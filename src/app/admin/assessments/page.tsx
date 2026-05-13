@@ -13,7 +13,8 @@ import {
   CloudUploadOutlined, 
   CheckCircleOutlined,
   ExclamationCircleOutlined,
-  DatabaseOutlined
+  DatabaseOutlined,
+  InfoCircleOutlined
 } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
@@ -132,16 +133,17 @@ export default function BulkAssessmentPage() {
 
       const data = await res.json();
       if (data.status === "success") {
-        message.success(`تمت معالجة ${data.processed_count} درجة بنجاح`);
+        message.success(`تمت رصد ${data.processed_count} درجة بنجاح`);
         fetchStudents(selectedPlan, metadata!.student_group);
       } else if (data.status === "error") {
         if (data.missing_students) {
           setErrorData(data.missing_students);
           Modal.error({
             title: "فشل التحقق: طلاب مفقودون",
-            content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى مراجعة جدول الأخطاء أدناه.",
+            content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى اضافتهم قبل اعادة المحاوله.",
             width: 600,
-            okText: "حسناً"
+            okText: "حسناً",
+            icon: <ExclamationCircleOutlined color="#ff4d4f" />
           });
         } else {
           message.error(data.message || "فشل في معالجة الدرجات");
@@ -156,7 +158,7 @@ export default function BulkAssessmentPage() {
 
   const columns = [
     {
-      title: "رقم الطالب",
+      title: "رقم القيد",
       dataIndex: "numeric_id",
       key: "numeric_id",
       width: 120,
@@ -190,7 +192,7 @@ export default function BulkAssessmentPage() {
       width: 100,
       render: (status: number) => (
         status === 1 
-          ? <Tag color="success">تم التسليم</Tag> 
+          ? <Tag color="success">تم الرصد</Tag> 
           : <Tag color="warning">مسودة</Tag>
       )
     }
@@ -201,7 +203,7 @@ export default function BulkAssessmentPage() {
       <Flex vertical gap={24}>
         <Flex justify="space-between" align="center">
           <div>
-            <Title level={2} style={{ margin: 0, fontWeight: 900 }}>الرفع الجماعي للدرجات</Title>
+            <Title level={2} style={{ margin: 0, fontWeight: 900 }}>الرصد الجماعي للدرجات</Title>
             <Text type="secondary">استيراد والتحقق من درجات الطلاب من ملفات خارجية.</Text>
           </div>
           <Space size={20}>
@@ -217,6 +219,7 @@ export default function BulkAssessmentPage() {
             </Space>
             <Divider type="vertical" />
             <Button 
+              type="dashed"
               icon={<SearchOutlined />} 
               onClick={() => selectedPlan && fetchStudents(selectedPlan, metadata!.student_group)}
               disabled={!selectedPlan}
@@ -230,10 +233,10 @@ export default function BulkAssessmentPage() {
           <Space direction="vertical" size={20} style={{ width: "100%" }}>
             <Flex gap={16} align="flex-end">
               <div style={{ flex: 1 }}>
-                <Text strong style={{ display: "block", marginBottom: 8 }}>اختر خطة التقييم</Text>
+                <Text strong style={{ display: "block", marginBottom: 8 }}>اختر كود الامتحان</Text>
                 <Select
                   showSearch
-                  placeholder="ابحث عن الخطة..."
+                  placeholder="ابحث عن الكود..."
                   style={{ width: "100%" }}
                   size="large"
                   loading={loading}
@@ -260,7 +263,7 @@ export default function BulkAssessmentPage() {
                   disabled={!selectedPlan}
                   style={{ borderRadius: 12, padding: "0 30px" }}
                 >
-                  رفع ملف Excel
+                  رفع ملف اكسل
                 </Button>
               </Upload>
             </Flex>
@@ -283,7 +286,7 @@ export default function BulkAssessmentPage() {
                 </div>
                 <Divider type="vertical" style={{ height: 40 }} />
                 <div>
-                  <Text type="secondary" style={{ fontSize: 11 }}>المقيدون</Text>
+                  <Text type="secondary" style={{ fontSize: 11 }}>المسجلون</Text>
                   <Text strong style={{ display: "block" }}>{students.length} طالب</Text>
                 </div>
               </Flex>
@@ -323,7 +326,7 @@ export default function BulkAssessmentPage() {
           bordered
           pagination={{ pageSize: 20 }}
           style={{ borderRadius: 24, overflow: "hidden" }}
-          locale={{ emptyText: <Empty description="اختر خطة لعرض الطلاب" /> }}
+          locale={{ emptyText: <Empty description="اختر كود امتحان الطلاب" /> }}
         />
       </Flex>
 
