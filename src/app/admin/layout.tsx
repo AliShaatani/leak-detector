@@ -23,6 +23,18 @@ import {
 const { Sider, Content, Header } = Layout;
 const { Text, Title } = Typography;
 
+// Define menu items outside to ensure stability
+const NAV_ITEMS = [
+  { key: "/admin", label: "لوحة التحكم", icon: <DashboardOutlined /> },
+  { key: "/admin/users", label: "إدارة المستخدمين", icon: <UserOutlined /> },
+  { key: "/admin/categories", label: "تصنيفات الملفات", icon: <FolderOpenOutlined /> },
+  { key: "/admin/files", label: "إدارة الملفات", icon: <FileTextOutlined /> },
+  { key: "/admin/assessments", label: "رصد الدرجات", icon: <DatabaseOutlined /> },
+  { key: "/admin/groups", label: "المجموعات", icon: <TeamOutlined /> },
+  { key: "/admin/scan", label: "كاشف التسريبات", icon: <ScanOutlined /> },
+  { key: "/admin/settings", label: "الإعدادات", icon: <SettingOutlined /> },
+];
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -30,6 +42,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileVisible, setMobileVisible] = React.useState(false);
   const [isDark, setIsDark] = React.useState(true); 
   const [isReady, setIsReady] = React.useState(false);
+
+  // Normalize pathname to remove trailing slashes for exact menu matching
+  const activeKey = pathname === "/admin" ? "/admin" : pathname.replace(/\/$/, "");
 
   React.useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -52,18 +67,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
-  // Ensure these paths match your folder structure exactly
-  const menuItems = [
-    { key: "/admin", label: "لوحة التحكم", icon: <DashboardOutlined /> },
-    { key: "/admin/users", label: "إدارة المستخدمين", icon: <UserOutlined /> },
-    { key: "/admin/categories", label: "تصنيفات الملفات", icon: <FolderOpenOutlined /> },
-    { key: "/admin/files", label: "إدارة الملفات", icon: <FileTextOutlined /> },
-    { key: "/admin/assessments", label: "رصد الدرجات", icon: <DatabaseOutlined /> },
-    { key: "/admin/groups", label: "المجموعات", icon: <TeamOutlined /> },
-    { key: "/admin/scan", label: "كاشف التسريبات", icon: <ScanOutlined /> },
-    { key: "/admin/settings", label: "الإعدادات", icon: <SettingOutlined /> },
-  ];
-
   const sidebarContent = (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ padding: "24px", textAlign: "center" }}>
@@ -74,18 +77,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           style={{ width: collapsed ? 32 : 60, transition: "width 0.3s", marginBottom: 16 }} 
         />
         {!collapsed && (
-          <>
+          <div className="animate-fade">
             <Title level={4} style={{ color: "var(--text-main)", margin: 0, fontWeight: 800 }}>لوحة الإشراف</Title>
             <Text type="secondary" style={{ fontSize: 12 }}>نظام الإدارة الذكي</Text>
-          </>
+          </div>
         )}
       </div>
 
       <Menu
         mode="inline"
-        selectedKeys={[pathname]}
+        selectedKeys={[activeKey]}
         style={{ borderRight: 0, background: "transparent", flex: 1 }}
-        items={menuItems}
+        items={NAV_ITEMS}
         onClick={({ key }) => {
           router.push(key);
           if (mobileVisible) setMobileVisible(false);
@@ -120,22 +123,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AntdConfig isDark={isDark}>
       <Layout style={{ minHeight: "100vh" }}>
-        {/* Mobile Header */}
-        <div className="mobile-header">
-           <Button 
-            type="text" 
-            icon={<MenuUnfoldOutlined style={{ color: "var(--text-main)", fontSize: 20 }} />} 
-            onClick={() => setMobileVisible(true)}
-          />
-          <Title level={5} style={{ color: "var(--text-main)", margin: 0 }}>نظام التسريبات</Title>
-          <Button 
-            shape="circle" 
-            icon={isDark ? <SunOutlined /> : <MoonOutlined />} 
-            onClick={() => setIsDark(!isDark)}
-          />
-        </div>
-
-        {/* Desktop Sider */}
         <Sider
           width={280}
           collapsed={collapsed}
@@ -156,7 +143,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {sidebarContent}
         </Sider>
 
-        {/* Mobile Sider (Drawer) */}
+        {/* Mobile Sidebar */}
         <Drawer
           placement="right"
           onClose={() => setMobileVisible(false)}
@@ -165,9 +152,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           width={280}
           closable={false}
         >
-          <div style={{ height: "100%" }}>
-            {sidebarContent}
-          </div>
+          <div style={{ height: "100%" }}>{sidebarContent}</div>
         </Drawer>
 
         <Layout style={{ 
@@ -175,7 +160,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           transition: "margin-right 0.2s",
           background: "var(--bg)" 
         }}>
-          <Header style={{ 
+          {/* Mobile Header */}
+          <div className="mobile-header">
+             <Button 
+              type="text" 
+              icon={<MenuUnfoldOutlined style={{ color: "var(--text-main)", fontSize: 20 }} />} 
+              onClick={() => setMobileVisible(true)}
+            />
+            <Title level={5} style={{ color: "var(--text-main)", margin: 0 }}>نظام التسريبات</Title>
+            <Button 
+              shape="circle" 
+              icon={isDark ? <SunOutlined /> : <MoonOutlined />} 
+              onClick={() => setIsDark(!isDark)}
+            />
+          </div>
+
+          <Header className="desktop-header" style={{ 
             background: "transparent", 
             padding: "0 40px", 
             height: 80, 
@@ -216,11 +216,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </Layout>
 
       <style jsx global>{`
-        /* Removed custom CSS overrides that caused "sticky" grey backgrounds */
         .ant-menu-item {
           border-radius: 12px !important;
           margin: 4px 12px !important;
           width: calc(100% - 24px) !important;
+          transition: all 0.2s ease !important;
+        }
+        /* Fix sticking grey backgrounds */
+        .ant-menu-item:not(.ant-menu-item-selected):active,
+        .ant-menu-item:not(.ant-menu-item-selected):focus {
+          background: transparent !important;
         }
         .mobile-header {
           display: none;
