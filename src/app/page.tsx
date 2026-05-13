@@ -33,6 +33,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Ensure clean slate on login mount to prevent stale session issues
+  React.useEffect(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  }, []);
+
   const onFinish = async (values: any) => {
     setLoading(true);
     setError(null);

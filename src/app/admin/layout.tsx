@@ -37,10 +37,11 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = React.useState(false);
-  const [mobileVisible, setMobileVisible] = React.useState(false);
-  const [isDark, setIsDark] = React.useState(true); 
+
   const [isReady, setIsReady] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(false);
+  const [isDark, setIsDark] = React.useState(false);
+  const [mobileVisible, setMobileVisible] = React.useState(false);
 
   const activeKey = pathname === "/admin" ? "/admin" : pathname.replace(/\/$/, "");
 
@@ -109,7 +110,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           icon={<LogoutOutlined />} 
           onClick={() => {
             localStorage.clear();
-            router.replace("/");
+            sessionStorage.clear();
+            window.location.href = "/";
           }}
           style={{ 
             height: 45, 
