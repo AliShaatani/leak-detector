@@ -6,6 +6,7 @@ import {
   Upload, Switch, Tag, Alert, Progress, message,
   Flex, Divider, Badge, Modal, Empty
 } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import {
   UploadOutlined,
   SearchOutlined,
