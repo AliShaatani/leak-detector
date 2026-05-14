@@ -165,7 +165,7 @@ export default function BulkAssessmentPage() {
     });
   };
 
-  const columns: ColumnsType<Student> = [
+  const columns = [
     {
       title: (
         <Flex justify="space-between" align="center">
