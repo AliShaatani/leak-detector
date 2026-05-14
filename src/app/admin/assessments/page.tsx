@@ -171,7 +171,7 @@ export default function BulkAssessmentPage() {
       title: "#",
       key: "index",
       width: 60,
-      align: "center" as const,
+      align: "center",
       render: (_: any, __: any, index: number) => (
         <Text type="secondary" style={{ fontSize: 12 }}>{index + 1}</Text>
       )
