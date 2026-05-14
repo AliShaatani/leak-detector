@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/assessment-logs — fetch all logs, newest first
 export async function GET() {
   try {
