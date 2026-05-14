@@ -14,7 +14,8 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   DatabaseOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  CopyOutlined
 } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
@@ -156,23 +157,45 @@ export default function BulkAssessmentPage() {
       setUploading(false);
     }
   };
+  
+  const copyColumn = (data: any[], dataIndex: string | ((item: any) => string), title: string) => {
+    const text = data.map(item => typeof dataIndex === 'function' ? dataIndex(item) : (item[dataIndex] || "")).join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      message.success(`تم نسخ ${title}`);
+    });
+  };
 
   const columns = [
     {
-      title: "رقم القيد",
+      title: (
+        <Flex justify="space-between" align="center">
+          <span>رقم القيد</span>
+          <CopyOutlined onClick={() => copyColumn(students, (s) => s.numeric_id || s.student, "رقم القيد")} style={{ cursor: "pointer", opacity: 0.5 }} />
+        </Flex>
+      ),
       dataIndex: "numeric_id",
       key: "numeric_id",
       width: 120,
       render: (id: string, record: Student) => id || <Text type="secondary">{record.student}</Text>
     },
     {
-      title: "اسم الطالب",
+      title: (
+        <Flex justify="space-between" align="center">
+          <span>اسم الطالب</span>
+          <CopyOutlined onClick={() => copyColumn(students, "student_name", "اسم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
+        </Flex>
+      ),
       dataIndex: "student_name",
       key: "student_name",
       ellipsis: true,
     },
     ...(metadata?.criteria || []).map(c => ({
-      title: `${c.assessment_criteria} (/${c.maximum_score})`,
+      title: (
+        <Flex justify="space-between" align="center">
+          <span>{`${c.assessment_criteria} (/${c.maximum_score})`}</span>
+          <CopyOutlined onClick={() => copyColumn(students, (s) => String(s.assessment_details?.[c.assessment_criteria]?.[0] || ""), c.assessment_criteria)} style={{ cursor: "pointer", opacity: 0.5 }} />
+        </Flex>
+      ),
       key: c.assessment_criteria,
       render: (_: any, record: Student) => {
         const detail = record.assessment_details?.[c.assessment_criteria];
@@ -314,9 +337,36 @@ export default function BulkAssessmentPage() {
                 <Table
                   dataSource={errorData.map((err, i) => ({ ...err, key: i }))}
                   columns={[
-                    { title: "الرقم", dataIndex: "student_id", width: 120 },
-                    { title: "الاسم", dataIndex: "student_name", render: (n) => n || <Text type="secondary">غير معروف</Text> },
-                    { title: "السبب", dataIndex: "reason", render: (r) => <Tag color="error">{r}</Tag> }
+                    { 
+                      title: (
+                        <Flex justify="space-between" align="center">
+                          <span>الرقم</span>
+                          <CopyOutlined onClick={() => copyColumn(errorData, "student_id", "رقم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
+                        </Flex>
+                      ), 
+                      dataIndex: "student_id", 
+                      width: 120 
+                    },
+                    { 
+                      title: (
+                        <Flex justify="space-between" align="center">
+                          <span>الاسم</span>
+                          <CopyOutlined onClick={() => copyColumn(errorData, "student_name", "اسم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
+                        </Flex>
+                      ), 
+                      dataIndex: "student_name", 
+                      render: (n) => n || <Text type="secondary">غير معروف</Text> 
+                    },
+                    { 
+                      title: (
+                        <Flex justify="space-between" align="center">
+                          <span>السبب</span>
+                          <CopyOutlined onClick={() => copyColumn(errorData, "reason", "السبب")} style={{ cursor: "pointer", opacity: 0.5 }} />
+                        </Flex>
+                      ), 
+                      dataIndex: "reason", 
+                      render: (r) => <Tag color="error">{r}</Tag> 
+                    }
                   ]}
                   size="small"
                   pagination={showAllErrors ? false : { pageSize: 5 }}
