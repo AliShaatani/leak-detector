@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { assessmentPlan, courseName, studentGroup, submittedCount, operationType, performedBy } = body;
 
-    if (!assessmentPlan || !submittedCount || !operationType) {
+    if (!assessmentPlan || submittedCount === undefined || !operationType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
