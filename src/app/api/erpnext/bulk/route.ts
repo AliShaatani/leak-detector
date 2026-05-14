@@ -64,6 +64,50 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ERPNext not configured" }, { status: 503 });
     }
 
+    // zero_drafts: mark each draft student with 0 scores directly,
+    // then submit. Bypasses the ID-keyword matching in process_bulk_json_scores.
+    if (method === "zero_drafts" && assessment_plan && Array.isArray(scores_data)) {
+      let processed_count = 0;
+      const errors: string[] = [];
+
+      for (const entry of scores_data) {
+        try {
+          const markUrl = `https://${baseUrl}/api/method/education.bulk_api.mark_assessment_result`;
+          const markRes = await fetch(markUrl, {
+            method: "POST",
+            headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ assessment_plan, scores: entry }),
+          });
+          if (markRes.ok) {
+            processed_count++;
+          } else {
+            const errData = await markRes.json();
+            errors.push(errData?.message || errData?.error || `HTTP ${markRes.status}`);
+          }
+        } catch (e: any) {
+          errors.push(e.message);
+        }
+      }
+
+      if (errors.length > 0 && processed_count === 0) {
+        return NextResponse.json({ status: "error", message: errors.join(", ") });
+      }
+
+      // Submit all draft results for this assessment plan
+      try {
+        const submitUrl = `https://${baseUrl}/api/method/education.bulk_api.submit_assessment_results`;
+        await fetch(submitUrl, {
+          method: "POST",
+          headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ assessment_plan, student_group: body.student_group || "" }),
+        });
+      } catch (_) {
+        // submit is best-effort
+      }
+
+      return NextResponse.json({ status: "success", processed_count });
+    }
+
     let erpMethod = "";
     let payload: any = { assessment_plan, zero_missing };
 

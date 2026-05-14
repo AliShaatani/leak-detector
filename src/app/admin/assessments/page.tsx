@@ -161,7 +161,7 @@ export default function BulkAssessmentPage() {
 
   const handleZeroDrafts = () => {
     if (!selectedPlan || !metadata) return;
-    
+
     const drafts = students.filter(s => s.docstatus === 0);
     if (drafts.length === 0) {
       message.info("لا يوجد طلاب بوضعية مسودة لتصفيرهم.");
@@ -175,14 +175,47 @@ export default function BulkAssessmentPage() {
       okType: "danger",
       cancelText: "إلغاء",
       onOk: async () => {
-        const scores = drafts.map(s => {
-          const row: any = { "الرقم": s.numeric_id || s.student };
-          metadata.criteria.forEach(c => {
-            row[c.assessment_criteria] = 0;
+        setUploading(true);
+        try {
+          // Build zero-score payload using ERPNext student name directly.
+          // Each entry matches what mark_assessment_result expects:
+          // { student, assessment_details: { criteria_name: 0, ... }, total_score, comment }
+          const scores_data = drafts.map(s => {
+            const assessment_details: Record<string, number> = {};
+            metadata!.criteria.forEach(c => {
+              assessment_details[c.assessment_criteria] = 0;
+            });
+            return {
+              student: s.student,
+              assessment_details,
+              total_score: 0,
+              comment: "تصفير يدوي (مسودة)"
+            };
           });
-          return row;
-        });
-        await processScores(scores);
+
+          const res = await fetch("/api/erpnext/bulk", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              method: "zero_drafts",
+              assessment_plan: selectedPlan,
+              student_group: metadata!.student_group,
+              scores_data
+            })
+          });
+
+          const data = await res.json();
+          if (data.status === "success") {
+            message.success(`تم تصفير ${data.processed_count} طالب بنجاح`);
+            fetchStudents(selectedPlan!, metadata!.student_group);
+          } else {
+            message.error(data.message || "فشل التصفير");
+          }
+        } catch (err) {
+          message.error("فشل الطلب");
+        } finally {
+          setUploading(false);
+        }
       }
     });
   };
