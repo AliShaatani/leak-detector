@@ -81,3 +81,14 @@ model Setting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model AssessmentLog {
+  id             String   @id @default(cuid())
+  assessmentPlan String
+  courseName     String
+  studentGroup   String
+  submittedCount Int
+  operationType  String   // "excel" | "zero_drafts"
+  performedBy    String   // user display name
+  createdAt      DateTime @default(now())
+}

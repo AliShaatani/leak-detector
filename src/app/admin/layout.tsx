@@ -17,21 +17,23 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   SunOutlined,
-  MoonOutlined
+  MoonOutlined,
+  HistoryOutlined
 } from "@ant-design/icons";
 
 const { Sider, Content, Header } = Layout;
 const { Text, Title } = Typography;
 
 const NAV_ITEMS = [
-  { key: "/admin", label: "لوحة التحكم", icon: <DashboardOutlined /> },
-  { key: "/admin/users", label: "إدارة المستخدمين", icon: <UserOutlined /> },
-  { key: "/admin/categories", label: "تصنيفات الملفات", icon: <FolderOpenOutlined /> },
-  { key: "/admin/files", label: "إدارة الملفات", icon: <FileTextOutlined /> },
-  { key: "/admin/assessments", label: "رصد الدرجات", icon: <DatabaseOutlined /> },
-  { key: "/admin/groups", label: "المجموعات", icon: <TeamOutlined /> },
-  { key: "/admin/scan", label: "كاشف التسريبات", icon: <ScanOutlined /> },
-  { key: "/admin/settings", label: "الإعدادات", icon: <SettingOutlined /> },
+  { key: "/admin",              label: "لوحة التحكم",       icon: <DashboardOutlined /> },
+  { key: "/admin/users",         label: "إدارة المستخدمين",  icon: <UserOutlined /> },
+  { key: "/admin/categories",    label: "تصنيفات الملفات",   icon: <FolderOpenOutlined /> },
+  { key: "/admin/files",         label: "إدارة الملفات",     icon: <FileTextOutlined /> },
+  { key: "/admin/assessments",   label: "رصد الدرجات",       icon: <DatabaseOutlined /> },
+  { key: "/admin/assessments/logs", label: "سجل الرصد",      icon: <HistoryOutlined /> },
+  { key: "/admin/groups",        label: "المجموعات",         icon: <TeamOutlined /> },
+  { key: "/admin/scan",          label: "كاشف التسريبات",    icon: <ScanOutlined /> },
+  { key: "/admin/settings",      label: "الإعدادات",         icon: <SettingOutlined /> },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

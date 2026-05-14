@@ -43,16 +43,44 @@ interface Metadata {
 }
 
 export default function BulkAssessmentPage() {
-  const [loading, setLoading] = useState(false);
-  const [plans, setPlans] = useState<{ value: string; label: string }[]>([]);
+  const [loading, setLoading]           = useState(false);
+  const [plans, setPlans]               = useState<{ value: string; label: string }[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [metadata, setMetadata] = useState<Metadata | null>(null);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [metadata, setMetadata]         = useState<Metadata | null>(null);
+  const [students, setStudents]         = useState<Student[]>([]);
   const [localParsing, setLocalParsing] = useState(true);
-  const [errorData, setErrorData] = useState<any[] | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [zeroMissing, setZeroMissing] = useState(false);
+  const [errorData, setErrorData]       = useState<any[] | null>(null);
+  const [uploading, setUploading]       = useState(false);
+  const [zeroMissing, setZeroMissing]   = useState(false);
   const [showAllErrors, setShowAllErrors] = useState(false);
+  const [currentUser, setCurrentUser]   = useState<string>("غير معروف");
+
+  // Load current admin user name once on mount
+  useEffect(() => {
+    const userId = typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
+    if (!userId) return;
+    fetch(`/api/users/${userId}`)
+      .then(r => r.json())
+      .then(d => { if (d?.name) setCurrentUser(d.name); })
+      .catch(() => {});
+  }, []);
+
+  // Fire-and-forget: record a successful operation in the local DB
+  const saveLog = (operationType: string, submittedCount: number) => {
+    if (!selectedPlan || !metadata) return;
+    fetch("/api/assessment-logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        assessmentPlan: selectedPlan,
+        courseName:     metadata.course_name,
+        studentGroup:   metadata.student_group,
+        submittedCount,
+        operationType,
+        performedBy:    currentUser,
+      }),
+    }).catch(() => {}); // silent — logging should never break the main flow
+  };
 
   const searchPlans = async (term: string) => {
     try {
@@ -137,6 +165,7 @@ export default function BulkAssessmentPage() {
       const data = await res.json();
       if (data.status === "success") {
         message.success(`تمت رصد ${data.processed_count} درجة بنجاح`);
+        saveLog("excel", data.processed_count);
         fetchStudents(selectedPlan, metadata!.student_group);
       } else if (data.status === "error") {
         if (data.missing_students) {
@@ -207,6 +236,7 @@ export default function BulkAssessmentPage() {
           const data = await res.json();
           if (data.status === "success") {
             message.success(`تم تصفير ${data.processed_count} طالب بنجاح`);
+            saveLog("zero_drafts", data.processed_count);
             fetchStudents(selectedPlan!, metadata!.student_group);
           } else {
             message.error(data.message || "فشل التصفير");
