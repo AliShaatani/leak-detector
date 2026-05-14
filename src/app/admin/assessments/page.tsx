@@ -159,6 +159,34 @@ export default function BulkAssessmentPage() {
     }
   };
 
+  const handleZeroDrafts = () => {
+    if (!selectedPlan || !metadata) return;
+    
+    const drafts = students.filter(s => s.docstatus === 0);
+    if (drafts.length === 0) {
+      message.info("لا يوجد طلاب بوضعية مسودة لتصفيرهم.");
+      return;
+    }
+
+    Modal.confirm({
+      title: "تصفير المسودات",
+      content: `هل أنت متأكد من رصد 0 درجة لـ ${drafts.length} طالب (حالتهم مسودة)؟ سيتم اعتبارهم غائبين.`,
+      okText: "نعم، تصفير",
+      okType: "danger",
+      cancelText: "إلغاء",
+      onOk: async () => {
+        const scores = drafts.map(s => {
+          const row: any = { "الرقم": s.numeric_id || s.student };
+          metadata.criteria.forEach(c => {
+            row[c.assessment_criteria] = 0;
+          });
+          return row;
+        });
+        await processScores(scores);
+      }
+    });
+  };
+
   const copyColumn = (data: any[], dataIndex: string | ((item: any) => string), title: string) => {
     const text = data.map(item => typeof dataIndex === 'function' ? dataIndex(item) : (item[dataIndex] || "")).join("\n");
     navigator.clipboard.writeText(text).then(() => {
@@ -282,6 +310,15 @@ export default function BulkAssessmentPage() {
               />
             </Space>
             <Divider type="vertical" />
+            <Button 
+              type="primary"
+              danger
+              icon={<CheckCircleOutlined />} 
+              onClick={handleZeroDrafts}
+              disabled={!selectedPlan || students.filter(s => s.docstatus === 0).length === 0}
+            >
+              تصفير المسودات
+            </Button>
             <Button
               type="dashed"
               icon={<SearchOutlined />}
