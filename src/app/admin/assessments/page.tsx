@@ -162,7 +162,7 @@ export default function BulkAssessmentPage() {
   const handleZeroDrafts = () => {
     if (!selectedPlan || !metadata) return;
 
-    const drafts = students.filter(s => s.docstatus === 0);
+    const drafts = students.filter(s => s.docstatus !== 1);
     if (drafts.length === 0) {
       message.info("لا يوجد طلاب بوضعية مسودة لتصفيرهم.");
       return;
@@ -348,7 +348,7 @@ export default function BulkAssessmentPage() {
               danger
               icon={<CheckCircleOutlined />} 
               onClick={handleZeroDrafts}
-              disabled={!selectedPlan || students.filter(s => s.docstatus === 0).length === 0}
+              disabled={!selectedPlan || students.filter(s => s.docstatus !== 1).length === 0}
             >
               تصفير المسودات
             </Button>
