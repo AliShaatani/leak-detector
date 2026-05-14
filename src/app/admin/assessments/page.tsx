@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Typography, Card, Space, Select, Table, Button, 
-  Upload, Switch, Tag, Alert, Progress, message, 
-  Flex, Divider, Badge, Modal, Empty 
+import {
+  Typography, Card, Space, Select, Table, Button,
+  Upload, Switch, Tag, Alert, Progress, message,
+  Flex, Divider, Badge, Modal, Empty
 } from "antd";
-import { 
-  UploadOutlined, 
-  SearchOutlined, 
-  FileTextOutlined, 
-  CloudUploadOutlined, 
+import {
+  UploadOutlined,
+  SearchOutlined,
+  FileTextOutlined,
+  CloudUploadOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
   DatabaseOutlined,
@@ -106,7 +106,7 @@ export default function BulkAssessmentPage() {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws);
-        
+
         processScores(data);
       } catch (err) {
         message.error("فشل في تحليل ملف Excel");
@@ -157,7 +157,7 @@ export default function BulkAssessmentPage() {
       setUploading(false);
     }
   };
-  
+
   const copyColumn = (data: any[], dataIndex: string | ((item: any) => string), title: string) => {
     const text = data.map(item => typeof dataIndex === 'function' ? dataIndex(item) : (item[dataIndex] || "")).join("\n");
     navigator.clipboard.writeText(text).then(() => {
@@ -170,7 +170,10 @@ export default function BulkAssessmentPage() {
       title: (
         <Flex justify="space-between" align="center">
           <span>رقم القيد</span>
-          <CopyOutlined onClick={() => copyColumn(students, (s) => s.numeric_id || s.student, "رقم القيد")} style={{ cursor: "pointer", opacity: 0.5 }} />
+          <CopyOutlined 
+            onClick={(e) => { e.stopPropagation(); copyColumn(students, (s) => s.numeric_id || s.student, "رقم القيد"); }} 
+            style={{ cursor: "pointer", opacity: 0.5 }} 
+          />
         </Flex>
       ),
       dataIndex: "numeric_id",
@@ -183,7 +186,10 @@ export default function BulkAssessmentPage() {
       title: (
         <Flex justify="space-between" align="center">
           <span>اسم الطالب</span>
-          <CopyOutlined onClick={() => copyColumn(students, "student_name", "اسم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
+          <CopyOutlined 
+            onClick={(e) => { e.stopPropagation(); copyColumn(students, "student_name", "اسم الطالب"); }} 
+            style={{ cursor: "pointer", opacity: 0.5 }} 
+          />
         </Flex>
       ),
       dataIndex: "student_name",
@@ -195,7 +201,10 @@ export default function BulkAssessmentPage() {
       title: (
         <Flex justify="space-between" align="center">
           <span>{`${c.assessment_criteria} (/${c.maximum_score})`}</span>
-          <CopyOutlined onClick={() => copyColumn(students, (s) => String(s.assessment_details?.[c.assessment_criteria]?.[0] || ""), c.assessment_criteria)} style={{ cursor: "pointer", opacity: 0.5 }} />
+          <CopyOutlined 
+            onClick={(e) => { e.stopPropagation(); copyColumn(students, (s) => String(s.assessment_details?.[c.assessment_criteria]?.[0] || ""), c.assessment_criteria); }} 
+            style={{ cursor: "pointer", opacity: 0.5 }} 
+          />
         </Flex>
       ),
       key: c.assessment_criteria,
@@ -220,7 +229,10 @@ export default function BulkAssessmentPage() {
       title: (
         <Flex justify="space-between" align="center">
           <span>الحالة</span>
-          <CopyOutlined onClick={() => copyColumn(students, (s) => s.docstatus === 1 ? "تم الرصد" : "مسودة", "الحالة")} style={{ cursor: "pointer", opacity: 0.5 }} />
+          <CopyOutlined 
+            onClick={(e) => { e.stopPropagation(); copyColumn(students, (s) => s.docstatus === 1 ? "تم الرصد" : "مسودة", "الحالة"); }} 
+            style={{ cursor: "pointer", opacity: 0.5 }} 
+          />
         </Flex>
       ),
       dataIndex: "docstatus",
@@ -230,11 +242,11 @@ export default function BulkAssessmentPage() {
         { text: "تم الرصد", value: 1 },
         { text: "مسودة", value: 0 },
       ],
-      onFilter: (value: any, record: Student) => record.docstatus === value,
-      sorter: (a: Student, b: Student) => a.docstatus - b.docstatus,
+      onFilter: (value: any, record: Student) => String(record.docstatus) === String(value),
+      sorter: (a: Student, b: Student) => (Number(a.docstatus) || 0) - (Number(b.docstatus) || 0),
       render: (status: number) => (
-        status === 1 
-          ? <Tag color="success">تم الرصد</Tag> 
+        status === 1
+          ? <Tag color="success">تم الرصد</Tag>
           : <Tag color="warning">مسودة</Tag>
       )
     }
@@ -251,18 +263,18 @@ export default function BulkAssessmentPage() {
           <Space size={20}>
             <Space>
               <Text style={{ fontSize: 13 }}>تصفير الطلاب المفقودين</Text>
-              <Switch 
-                checked={zeroMissing} 
-                onChange={setZeroMissing} 
+              <Switch
+                checked={zeroMissing}
+                onChange={setZeroMissing}
                 size="small"
                 checkedChildren="نعم"
                 unCheckedChildren="لا"
               />
             </Space>
             <Divider type="vertical" />
-            <Button 
+            <Button
               type="dashed"
-              icon={<SearchOutlined />} 
+              icon={<SearchOutlined />}
               onClick={() => selectedPlan && fetchStudents(selectedPlan, metadata!.student_group)}
               disabled={!selectedPlan}
             >
@@ -291,16 +303,16 @@ export default function BulkAssessmentPage() {
                   options={plans}
                 />
               </div>
-              <Upload 
-                accept=".xlsx, .xls, .csv" 
-                beforeUpload={handleFileUpload} 
+              <Upload
+                accept=".xlsx, .xls, .csv"
+                beforeUpload={handleFileUpload}
                 showUploadList={false}
                 disabled={!selectedPlan || uploading}
               >
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  icon={<CloudUploadOutlined />} 
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<CloudUploadOutlined />}
                   loading={uploading}
                   disabled={!selectedPlan}
                   style={{ borderRadius: 12, padding: "0 30px" }}
@@ -311,9 +323,9 @@ export default function BulkAssessmentPage() {
             </Flex>
 
             {metadata && (
-              <Flex gap={24} className="metadata-strip" style={{ 
-                background: "var(--elevated)", 
-                padding: "16px 24px", 
+              <Flex gap={24} className="metadata-strip" style={{
+                background: "var(--elevated)",
+                padding: "16px 24px",
                 borderRadius: 16,
                 border: "1px solid var(--border)"
               }}>
@@ -343,9 +355,9 @@ export default function BulkAssessmentPage() {
               <Space direction="vertical" style={{ width: "100%", marginTop: 10 }}>
                 <Flex justify="space-between" align="center">
                   <Text>السجلات التالية في ملفك لم يتم معالجتها:</Text>
-                  <Button 
-                    type="link" 
-                    size="small" 
+                  <Button
+                    type="link"
+                    size="small"
                     onClick={() => setShowAllErrors(!showAllErrors)}
                     style={{ padding: 0 }}
                   >
@@ -355,35 +367,35 @@ export default function BulkAssessmentPage() {
                 <Table
                   dataSource={errorData.map((err, i) => ({ ...err, key: i }))}
                   columns={[
-                    { 
+                    {
                       title: (
                         <Flex justify="space-between" align="center">
                           <span>الرقم</span>
                           <CopyOutlined onClick={() => copyColumn(errorData, "student_id", "رقم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
                         </Flex>
-                      ), 
-                      dataIndex: "student_id", 
-                      width: 120 
+                      ),
+                      dataIndex: "student_id",
+                      width: 120
                     },
-                    { 
+                    {
                       title: (
                         <Flex justify="space-between" align="center">
                           <span>الاسم</span>
                           <CopyOutlined onClick={() => copyColumn(errorData, "student_name", "اسم الطالب")} style={{ cursor: "pointer", opacity: 0.5 }} />
                         </Flex>
-                      ), 
-                      dataIndex: "student_name", 
-                      render: (n) => n || <Text type="secondary">غير معروف</Text> 
+                      ),
+                      dataIndex: "student_name",
+                      render: (n) => n || <Text type="secondary">غير معروف</Text>
                     },
-                    { 
+                    {
                       title: (
                         <Flex justify="space-between" align="center">
                           <span>السبب</span>
                           <CopyOutlined onClick={() => copyColumn(errorData, "reason", "السبب")} style={{ cursor: "pointer", opacity: 0.5 }} />
                         </Flex>
-                      ), 
-                      dataIndex: "reason", 
-                      render: (r) => <Tag color="error">{r}</Tag> 
+                      ),
+                      dataIndex: "reason",
+                      render: (r) => <Tag color="error">{r}</Tag>
                     }
                   ]}
                   size="small"
@@ -398,15 +410,15 @@ export default function BulkAssessmentPage() {
           />
         )}
 
-        <Table 
-          columns={columns} 
-          dataSource={students.map((s, i) => ({ ...s, key: i }))} 
+        <Table
+          columns={columns}
+          dataSource={students.map((s, i) => ({ ...s, key: i }))}
           loading={loading}
           bordered
-          pagination={{ 
-            defaultPageSize: 20, 
-            showSizeChanger: true, 
-            pageSizeOptions: ["20", "50", "100", "500", "1000"] 
+          pagination={{
+            defaultPageSize: 20,
+            showSizeChanger: true,
+            pageSizeOptions: ["20", "50", "100", "500", "1000"]
           }}
           style={{ borderRadius: 24, overflow: "hidden" }}
           locale={{ emptyText: <Empty description="اختر كود امتحان الطلاب" /> }}
