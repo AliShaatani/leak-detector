@@ -167,6 +167,15 @@ export default function BulkAssessmentPage() {
 
   const columns = [
     {
+      title: "#",
+      key: "index",
+      width: 60,
+      align: "center",
+      render: (_: any, __: any, index: number) => (
+        <Text type="secondary" style={{ fontSize: 12 }}>{index + 1}</Text>
+      )
+    },
+    {
       title: (
         <Flex justify="space-between" align="center">
           <span>رقم القيد</span>
