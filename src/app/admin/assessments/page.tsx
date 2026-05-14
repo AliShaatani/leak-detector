@@ -193,7 +193,7 @@ export default function BulkAssessmentPage() {
     });
   };
 
-  const columns = [
+  const columns: ColumnsType<Student> = [
     {
       title: "#",
       key: "index",
