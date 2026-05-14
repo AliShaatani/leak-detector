@@ -176,6 +176,7 @@ export default function BulkAssessmentPage() {
       dataIndex: "numeric_id",
       key: "numeric_id",
       width: 120,
+      sorter: (a: Student, b: Student) => (a.numeric_id || a.student).localeCompare(b.numeric_id || b.student),
       render: (id: string, record: Student) => id || <Text type="secondary">{record.student}</Text>
     },
     {
@@ -188,6 +189,7 @@ export default function BulkAssessmentPage() {
       dataIndex: "student_name",
       key: "student_name",
       ellipsis: true,
+      sorter: (a: Student, b: Student) => a.student_name.localeCompare(b.student_name),
     },
     ...(metadata?.criteria || []).map(c => ({
       title: (
@@ -197,6 +199,11 @@ export default function BulkAssessmentPage() {
         </Flex>
       ),
       key: c.assessment_criteria,
+      sorter: (a: Student, b: Student) => {
+        const scoreA = Number(a.assessment_details?.[c.assessment_criteria]?.[0]) || 0;
+        const scoreB = Number(b.assessment_details?.[c.assessment_criteria]?.[0]) || 0;
+        return scoreA - scoreB;
+      },
       render: (_: any, record: Student) => {
         const detail = record.assessment_details?.[c.assessment_criteria];
         if (!detail) return <Text type="secondary">-</Text>;
@@ -210,10 +217,21 @@ export default function BulkAssessmentPage() {
       }
     })),
     {
-      title: "الحالة",
+      title: (
+        <Flex justify="space-between" align="center">
+          <span>الحالة</span>
+          <CopyOutlined onClick={() => copyColumn(students, (s) => s.docstatus === 1 ? "تم الرصد" : "مسودة", "الحالة")} style={{ cursor: "pointer", opacity: 0.5 }} />
+        </Flex>
+      ),
       dataIndex: "docstatus",
       key: "status",
-      width: 100,
+      width: 130,
+      filters: [
+        { text: "تم الرصد", value: 1 },
+        { text: "مسودة", value: 0 },
+      ],
+      onFilter: (value: any, record: Student) => record.docstatus === value,
+      sorter: (a: Student, b: Student) => a.docstatus - b.docstatus,
       render: (status: number) => (
         status === 1 
           ? <Tag color="success">تم الرصد</Tag> 
@@ -385,7 +403,11 @@ export default function BulkAssessmentPage() {
           dataSource={students.map((s, i) => ({ ...s, key: i }))} 
           loading={loading}
           bordered
-          pagination={{ pageSize: 20 }}
+          pagination={{ 
+            defaultPageSize: 20, 
+            showSizeChanger: true, 
+            pageSizeOptions: ["20", "50", "100", "500", "1000"] 
+          }}
           style={{ borderRadius: 24, overflow: "hidden" }}
           locale={{ emptyText: <Empty description="اختر كود امتحان الطلاب" /> }}
         />
