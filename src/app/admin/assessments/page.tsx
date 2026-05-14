@@ -50,6 +50,7 @@ export default function BulkAssessmentPage() {
   const [errorData, setErrorData] = useState<any[] | null>(null);
   const [uploading, setUploading] = useState(false);
   const [zeroMissing, setZeroMissing] = useState(false);
+  const [showAllErrors, setShowAllErrors] = useState(false);
 
   const searchPlans = async (term: string) => {
     try {
@@ -299,7 +300,17 @@ export default function BulkAssessmentPage() {
             message="أخطاء في التحقق"
             description={
               <Space direction="vertical" style={{ width: "100%", marginTop: 10 }}>
-                <Text>السجلات التالية في ملفك لم يتم معالجتها:</Text>
+                <Flex justify="space-between" align="center">
+                  <Text>السجلات التالية في ملفك لم يتم معالجتها:</Text>
+                  <Button 
+                    type="link" 
+                    size="small" 
+                    onClick={() => setShowAllErrors(!showAllErrors)}
+                    style={{ padding: 0 }}
+                  >
+                    {showAllErrors ? "عرض الصفحات" : "عرض الكل"}
+                  </Button>
+                </Flex>
                 <Table
                   dataSource={errorData.map((err, i) => ({ ...err, key: i }))}
                   columns={[
@@ -308,7 +319,7 @@ export default function BulkAssessmentPage() {
                     { title: "السبب", dataIndex: "reason", render: (r) => <Tag color="error">{r}</Tag> }
                   ]}
                   size="small"
-                  pagination={{ pageSize: 5 }}
+                  pagination={showAllErrors ? false : { pageSize: 5 }}
                 />
               </Space>
             }
