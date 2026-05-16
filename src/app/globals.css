@@ -169,9 +169,11 @@ td { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.95rem; 
 
 
 /* --- Global Glassmorphic Modal & Message Overrides --- */
-body .ant-modal-content,
-body .ant-message-notice-content {
+/* Ultra-high specificity to force override Ant Design's injected hash classes */
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-content,
+html body div.ant-message div.ant-message-notice div.ant-message-notice-content {
   background: var(--glass) !important;
+  background-color: var(--glass) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border: 1px solid var(--border-bright) !important;
@@ -181,35 +183,36 @@ body .ant-message-notice-content {
 }
 
 /* Ensure no inner elements have solid backgrounds that block the glass */
-body .ant-modal-header,
-body .ant-modal-body,
-body .ant-modal-footer,
-body .ant-modal-confirm-body,
-body .ant-modal-confirm-body-wrapper {
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-header,
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-body,
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-footer,
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-confirm-body,
+html body div.ant-modal-root div.ant-modal-wrap div.ant-modal div.ant-modal-confirm-body-wrapper {
   background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Force high contrast text colors */
-body .ant-modal-title, 
-body .ant-modal-confirm-title, 
-body .ant-modal-confirm-content,
-body .ant-message-custom-content,
-body .ant-modal-confirm-content span,
-body .ant-modal-confirm-title span,
-body .ant-modal-confirm-content div {
+html body div.ant-modal-root div.ant-modal div.ant-modal-title, 
+html body div.ant-modal-root div.ant-modal div.ant-modal-confirm-title, 
+html body div.ant-modal-root div.ant-modal div.ant-modal-confirm-content,
+html body div.ant-message div.ant-message-notice div.ant-message-custom-content,
+html body div.ant-modal-root div.ant-modal-confirm-content span,
+html body div.ant-modal-root div.ant-modal-confirm-title span,
+html body div.ant-modal-root div.ant-modal-confirm-content div {
   color: var(--text-main) !important;
   font-family: var(--font-cairo), 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
-body .ant-message-notice-content {
+html body div.ant-message div.ant-message-notice div.ant-message-notice-content {
   padding: 14px 28px !important;
   display: inline-block;
 }
 
-body .ant-modal-close {
+html body div.ant-modal-root div.ant-modal div.ant-modal-close {
   color: var(--text-mute) !important;
 }
-body .ant-modal-close:hover {
+html body div.ant-modal-root div.ant-modal div.ant-modal-close:hover {
   color: var(--text-main) !important;
   background: var(--glass-border) !important;
 }
@@ -221,7 +224,7 @@ body .ant-modal-close:hover {
 }
 
 /* Ensure icons have proper contrast based on theme */
-body .ant-modal-confirm-info .anticon { color: var(--accent) !important; }
-body .ant-modal-confirm-success .anticon { color: var(--success) !important; }
-body .ant-modal-confirm-error .anticon { color: var(--danger) !important; }
-body .ant-modal-confirm-warning .anticon { color: var(--warning) !important; }
+html body div.ant-modal-root div.ant-modal-confirm-info .anticon { color: var(--accent) !important; }
+html body div.ant-modal-root div.ant-modal-confirm-success .anticon { color: var(--success) !important; }
+html body div.ant-modal-root div.ant-modal-confirm-error .anticon { color: var(--danger) !important; }
+html body div.ant-modal-root div.ant-modal-confirm-warning .anticon { color: var(--warning) !important; }
