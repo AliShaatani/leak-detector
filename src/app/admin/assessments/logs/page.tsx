@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Typography, Card, Table, Tag, Space, Flex, Statistic,
-  Button, Input, Select, Empty, Badge, Tooltip, message
+  Button, Input, Select, Empty, Badge, Tooltip, message, App
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -41,6 +41,7 @@ export default function AssessmentLogsPage() {
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState("");
   const [opFilter, setOpFilter] = useState<string | null>(null);
+  const { message: appMessage } = App.useApp();
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -49,7 +50,7 @@ export default function AssessmentLogsPage() {
       const data = await res.json();
       if (Array.isArray(data)) setLogs(data);
     } catch {
-      message.error("فشل تحميل السجلات");
+      appMessage.error("فشل تحميل السجلات");
     } finally {
       setLoading(false);
     }

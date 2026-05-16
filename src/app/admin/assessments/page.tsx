@@ -43,6 +43,7 @@ interface Metadata {
 }
 
 export default function BulkAssessmentPage() {
+  const { modal, message: appMessage } = App.useApp();
   const [loading, setLoading]           = useState(false);
   const [plans, setPlans]               = useState<{ value: string; label: string }[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -105,10 +106,10 @@ export default function BulkAssessmentPage() {
         setMetadata(data);
         fetchStudents(plan, data.student_group);
       } else {
-        message.error(data.error || "فشل في جلب البيانات الوصفية");
+        appMessage.error(data.error || "فشل في جلب البيانات الوصفية");
       }
     } catch (err) {
-      message.error("فشل الطلب");
+      appMessage.error("فشل الطلب");
     } finally {
       setLoading(false);
     }
@@ -138,7 +139,7 @@ export default function BulkAssessmentPage() {
 
         processScores(data);
       } catch (err) {
-        message.error("فشل في تحليل ملف Excel");
+        appMessage.error("فشل في تحليل ملف Excel");
       }
     };
     reader.readAsBinaryString(file);
@@ -164,14 +165,13 @@ export default function BulkAssessmentPage() {
 
       const data = await res.json();
       if (data.status === "success") {
-        message.success(`تمت رصد ${data.processed_count} درجة بنجاح`);
+        appMessage.success(`تمت رصد ${data.processed_count} درجة بنجاح`);
         saveLog("excel", data.processed_count);
         fetchStudents(selectedPlan, metadata!.student_group);
       } else if (data.status === "error") {
         if (data.missing_students) {
           setErrorData(data.missing_students);
-          Modal.error({
-            className: "modern-modal",
+          modal.error({
             title: "فشل التحقق: طلاب مفقودون",
             content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى اضافتهم قبل اعادة المحاوله.",
             width: 600,
@@ -179,11 +179,11 @@ export default function BulkAssessmentPage() {
             icon: <ExclamationCircleOutlined color="#ff4d4f" />
           });
         } else {
-          message.error(data.message || "فشل في معالجة الدرجات");
+          appMessage.error(data.message || "فشل في معالجة الدرجات");
         }
       }
     } catch (err) {
-      message.error("فشل الرفع");
+      appMessage.error("فشل الرفع");
     } finally {
       setUploading(false);
     }
@@ -194,12 +194,11 @@ export default function BulkAssessmentPage() {
 
     const drafts = students.filter(s => s.docstatus !== 1);
     if (drafts.length === 0) {
-      message.info("لا يوجد طلاب بوضعية مسودة لتصفيرهم.");
+      appMessage.info("لا يوجد طلاب بوضعية مسودة لتصفيرهم.");
       return;
     }
 
-    Modal.confirm({
-      className: "modern-modal",
+    modal.confirm({
       title: "تصفير المسودات",
       content: `هل أنت متأكد من رصد 0 درجة لـ ${drafts.length} طالب (حالتهم مسودة)؟ سيتم اعتبارهم غائبين.`,
       okText: "نعم، تصفير",
@@ -237,14 +236,14 @@ export default function BulkAssessmentPage() {
 
           const data = await res.json();
           if (data.status === "success") {
-            message.success(`تم تصفير ${data.processed_count} طالب بنجاح`);
+            appMessage.success(`تم تصفير ${data.processed_count} طالب بنجاح`);
             saveLog("zero_drafts", data.processed_count);
             fetchStudents(selectedPlan!, metadata!.student_group);
           } else {
-            message.error(data.message || "فشل التصفير");
+            appMessage.error(data.message || "فشل التصفير");
           }
         } catch (err) {
-          message.error("فشل الطلب");
+          appMessage.error("فشل الطلب");
         } finally {
           setUploading(false);
         }
@@ -255,7 +254,7 @@ export default function BulkAssessmentPage() {
   const copyColumn = (data: any[], dataIndex: string | ((item: any) => string), title: string) => {
     const text = data.map(item => typeof dataIndex === 'function' ? dataIndex(item) : (item[dataIndex] || "")).join("\n");
     navigator.clipboard.writeText(text).then(() => {
-      message.success(`تم نسخ ${title}`);
+      appMessage.success(`تم نسخ ${title}`);
     });
   };
 
