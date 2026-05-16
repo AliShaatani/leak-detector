@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       erpMethod = "education.bulk_api.get_bulk_upload_metadata";
       params.append("assessment_plan", assessment_plan);
     } else if (method === "students" && assessment_plan && student_group) {
-      erpMethod = "education.bulk_api.get_assessment_students";
+      erpMethod = "education.bulk_api.get_filtered_assessment_students";
       params.append("assessment_plan", assessment_plan);
       params.append("student_group", student_group);
     } else if (method === "search_plans") {
