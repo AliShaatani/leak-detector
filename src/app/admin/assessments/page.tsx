@@ -171,6 +171,7 @@ export default function BulkAssessmentPage() {
         if (data.missing_students) {
           setErrorData(data.missing_students);
           Modal.error({
+            className: "modern-modal",
             title: "فشل التحقق: طلاب مفقودون",
             content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى اضافتهم قبل اعادة المحاوله.",
             width: 600,
@@ -198,6 +199,7 @@ export default function BulkAssessmentPage() {
     }
 
     Modal.confirm({
+      className: "modern-modal",
       title: "تصفير المسودات",
       content: `هل أنت متأكد من رصد 0 درجة لـ ${drafts.length} طالب (حالتهم مسودة)؟ سيتم اعتبارهم غائبين.`,
       okText: "نعم، تصفير",
