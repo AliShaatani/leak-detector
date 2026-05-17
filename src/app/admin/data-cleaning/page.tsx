@@ -50,9 +50,9 @@ interface ResolvedRow {
 
 // ─── Score computation (mirrors bulk_api.py logic) ────────────────────────────
 
-const FINAL_KEYWORDS = ["final", "finial", "النهائي"];
-const MID_KEYWORDS   = ["mid", "midterm", "نصفي"];
-const ID_KEYWORDS    = ["id", "student", "stundent", "roll", "number", "رقم القيد", "student_id"];
+const FINAL_KEYWORDS = ["final", "finial", "النهائي", "score", "mark", "total_score", "total score"];
+const MID_KEYWORDS = ["mid", "midterm", "نصفي"];
+const ID_KEYWORDS = ["id", "student", "stundent", "roll", "number", "رقم القيد", "student_id"];
 
 function extractStudentId(row: Record<string, any>): string {
   for (const k of Object.keys(row)) {
@@ -91,26 +91,26 @@ export default function DataCleaningPage() {
   const { message: appMessage } = App.useApp();
 
   // ── state ──
-  const [plans, setPlans]                           = useState<{ value: string; label: string }[]>([]);
-  const [selectedPlan, setSelectedPlan]             = useState<string | null>(null);
-  const [metadata, setMetadata]                     = useState<Metadata | null>(null);
-  const [metaLoading, setMetaLoading]               = useState(false);
+  const [plans, setPlans] = useState<{ value: string; label: string }[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [metadata, setMetadata] = useState<Metadata | null>(null);
+  const [metaLoading, setMetaLoading] = useState(false);
 
-  const [rawRows, setRawRows]                       = useState<Record<string, any>[]>([]);
-  const [fileName, setFileName]                     = useState<string>("");
+  const [rawRows, setRawRows] = useState<Record<string, any>[]>([]);
+  const [fileName, setFileName] = useState<string>("");
 
-  const [processing, setProcessing]                 = useState(false);
-  const [matched, setMatched]                       = useState<ResolvedRow[]>([]);
-  const [others, setOthers]                         = useState<ResolvedRow[]>([]);
-  const [done, setDone]                             = useState(false);
-  const [showAll, setShowAll]                       = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [matched, setMatched] = useState<ResolvedRow[]>([]);
+  const [others, setOthers] = useState<ResolvedRow[]>([]);
+  const [done, setDone] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   // ── step tracking (0-indexed) ──
   const currentStep =
     !selectedPlan ? 0 :
-    !metadata     ? 0 :
-    rawRows.length === 0 ? 1 :
-    !done         ? 2 : 3;
+      !metadata ? 0 :
+        rawRows.length === 0 ? 1 :
+          !done ? 2 : 3;
 
   // ── plan search ──
   const searchPlans = async (term: string) => {
@@ -244,8 +244,8 @@ export default function DataCleaningPage() {
           _warning: !r.student_group
             ? "لم يُعثر على مجموعة نشطة لهذا الطالب"
             : !r.assessment_plan
-            ? "لم يُعثر على خطة تقييم لهذه المجموعة والمقرر"
-            : undefined,
+              ? "لم يُعثر على خطة تقييم لهذه المجموعة والمقرر"
+              : undefined,
         }));
 
         setOthers(othersRows);
@@ -417,10 +417,10 @@ export default function DataCleaningPage() {
             current={currentStep}
             size="small"
             items={[
-              { title: "اختر خطة التقييم",  icon: <SearchOutlined /> },
+              { title: "اختر خطة التقييم", icon: <SearchOutlined /> },
               { title: "ارفع الملف المختلط", icon: <CloudUploadOutlined /> },
-              { title: "تحليل وتصنيف",       icon: <FilterOutlined /> },
-              { title: "تصدير النتيجة",       icon: <DownloadOutlined /> },
+              { title: "تحليل وتصنيف", icon: <FilterOutlined /> },
+              { title: "تصدير النتيجة", icon: <DownloadOutlined /> },
             ]}
           />
         </Card>
@@ -578,7 +578,7 @@ export default function DataCleaningPage() {
               />
             )}
 
-             <Card bordered={false} className="glass" style={{ borderRadius: 20 }}>
+            <Card bordered={false} className="glass" style={{ borderRadius: 20 }}>
               <Tabs
                 defaultActiveKey="matched"
                 size="large"
