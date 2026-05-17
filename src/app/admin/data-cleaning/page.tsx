@@ -44,6 +44,7 @@ interface ResolvedRow {
   score: number;
   student_group: string;
   assessment_plan: string;
+  docstatus?: number | null;
   _warning?: string;      // shown as a tooltip if group/plan not found
 }
 
@@ -178,7 +179,7 @@ export default function DataCleaningPage() {
     try {
       // 1. Fetch group students for the selected plan
       const studentsRes = await fetch(
-        `/api/erpnext/bulk?method=students&assessment_plan=${selectedPlan}&student_group=${encodeURIComponent(metadata.student_group)}`
+        `/api/erpnext/bulk?method=all_students&assessment_plan=${selectedPlan}&student_group=${encodeURIComponent(metadata.student_group)}`
       );
       const groupStudents: any[] = studentsRes.ok ? await studentsRes.json() : [];
 
@@ -206,6 +207,7 @@ export default function DataCleaningPage() {
             score,
             student_group: metadata.student_group,
             assessment_plan: selectedPlan,
+            docstatus: studentRec?.docstatus !== undefined ? studentRec.docstatus : null,
           });
         } else {
           unmatchedIds.push(sid);
@@ -237,6 +239,7 @@ export default function DataCleaningPage() {
           score: unmatchedScores[r.student_id] ?? 0,
           student_group: r.student_group || "غير موجود",
           assessment_plan: r.assessment_plan || "غير موجود",
+          docstatus: r.docstatus !== undefined ? r.docstatus : null,
           _warning: !r.student_group
             ? "لم يُعثر على مجموعة نشطة لهذا الطالب"
             : !r.assessment_plan
@@ -264,10 +267,20 @@ export default function DataCleaningPage() {
 
     const wb = XLSX.utils.book_new();
 
-    // Helper: convert rows to a 2-column sheet
+    // Helper: convert rows to sheet
     const toSheet = (rows: ResolvedRow[]) =>
       XLSX.utils.json_to_sheet(
-        rows.map((r) => ({ student_id: r.student_id, score: r.score }))
+        rows.map((r) => {
+          let statusText = "غير مرصودة";
+          if (r.docstatus === 1) statusText = "مرصودة معتمدة";
+          else if (r.docstatus === 0) statusText = "مسودة غير معتمدة";
+
+          return {
+            student_id: r.student_id,
+            score: r.score,
+            "حالة الرصد": statusText,
+          };
+        })
       );
 
     // Sheet 1: matched students → original assessment plan
@@ -332,6 +345,21 @@ export default function DataCleaningPage() {
       align: "center",
       sorter: (a, b) => a.score - b.score,
       render: (s: number) => <Text strong style={{ color: s > 0 ? "var(--accent)" : undefined }}>{s}</Text>,
+    },
+    {
+      title: "حالة الرصد",
+      key: "status",
+      width: 140,
+      align: "center",
+      render: (_: any, record: ResolvedRow) => {
+        if (record.docstatus === 1) {
+          return <Tag color="success">مرصودة معتمدة</Tag>;
+        } else if (record.docstatus === 0) {
+          return <Tag color="warning">مسودة غير معتمدة</Tag>;
+        } else {
+          return <Tag color="default">غير مرصودة</Tag>;
+        }
+      }
     },
     {
       title: "مجموعة الطلاب",
