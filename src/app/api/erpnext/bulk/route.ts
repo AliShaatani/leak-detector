@@ -7,6 +7,8 @@ export async function GET(req: NextRequest) {
     const method = searchParams.get("method");
     const assessment_plan = searchParams.get("assessment_plan");
     const student_group = searchParams.get("student_group");
+    const student_id = searchParams.get("student_id");
+    const course = searchParams.get("course");
 
     const { baseUrl, token } = await getErpSettings();
     if (!baseUrl || !token) {
@@ -27,6 +29,17 @@ export async function GET(req: NextRequest) {
       erpMethod = "frappe.desk.search.search_link";
       params.append("txt", searchParams.get("term") || "");
       params.append("doctype", "Assessment Plan");
+    } else if (method === "student_last_group" && student_id) {
+      erpMethod = "education.bulk_api.get_student_last_group";
+      params.append("student_id", student_id);
+    } else if (method === "group_assessment_plan" && student_group && course) {
+      erpMethod = "education.bulk_api.get_assessment_plan_for_group_course";
+      params.append("student_group", student_group);
+      params.append("course", course);
+    } else if (method === "batch_resolve" && course) {
+      // batch_resolve is a POST-style call tunnelled through GET isn't suitable
+      // — handled separately: client should POST to this route with method=batch_resolve
+      return NextResponse.json({ error: "Use POST for batch_resolve" }, { status: 405 });
     } else {
       return NextResponse.json({ error: "Invalid method or missing parameters" }, { status: 400 });
     }
@@ -57,11 +70,26 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { method, assessment_plan, scores_data, file_url, zero_missing } = body;
+    const { method, assessment_plan, scores_data, file_url, zero_missing, course, student_ids } = body;
 
     const { baseUrl, token } = await getErpSettings();
     if (!baseUrl || !token) {
       return NextResponse.json({ error: "ERPNext not configured" }, { status: 503 });
+    }
+
+    // batch_resolve: resolve a list of student IDs to their last group + assessment plan
+    if (method === "batch_resolve" && Array.isArray(student_ids) && course) {
+      const erpUrl = `https://${baseUrl}/api/method/education.bulk_api.batch_resolve_students`;
+      const erpRes = await fetch(erpUrl, {
+        method: "POST",
+        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ student_ids, course }),
+      });
+      const erpData = await erpRes.json();
+      if (!erpRes.ok) {
+        return NextResponse.json({ error: erpData?.message || "ERPNext error" }, { status: erpRes.status });
+      }
+      return NextResponse.json(erpData.message ?? erpData);
     }
 
     // zero_drafts: mark each draft student with 0 scores directly,
