@@ -85,6 +85,20 @@ function computeScore(row: Record<string, any>, criteria: Criterion[]): number {
   return parseFloat(total.toFixed(2));
 }
 
+function extractRawScore(row: Record<string, any>): number {
+  const scoreKeywords = ["النهائي", "الدرجة", "final", "score", "mark", "total_score", "total score", "total"];
+  for (const k of Object.keys(row)) {
+    const kLow = k.toLowerCase().trim();
+    if (scoreKeywords.some((kw) => kLow === kw || kLow.includes(kw))) {
+      const v = row[k];
+      if (v !== null && String(v).trim() !== "") {
+        return parseFloat(String(v)) || 0;
+      }
+    }
+  }
+  return 0;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function DataCleaningPage() {
@@ -234,19 +248,25 @@ export default function DataCleaningPage() {
 
         const batchData: any[] = batchRes.ok ? await batchRes.json() : [];
 
-        const othersRows: ResolvedRow[] = batchData.map((r: any) => ({
-          student_id: r.student_id,
-          student_name: r.student_name || "",
-          score: unmatchedScores[r.student_id] ?? 0,
-          student_group: r.student_group || "غير موجود",
-          assessment_plan: r.assessment_plan || "غير موجود",
-          docstatus: r.docstatus !== undefined ? r.docstatus : null,
-          _warning: !r.student_group
-            ? "لم يُعثر على مجموعة نشطة لهذا الطالب"
-            : !r.assessment_plan
-              ? "لم يُعثر على خطة تقييم لهذه المجموعة والمقرر"
-              : undefined,
-        }));
+        const othersRows: ResolvedRow[] = batchData.map((r: any) => {
+          const row = rawRows.find((row) => extractStudentId(row) === r.student_id) || {};
+          const score = r.criteria && r.criteria.length > 0 
+            ? computeScore(row, r.criteria) 
+            : extractRawScore(row);
+          return {
+            student_id: r.student_id,
+            student_name: r.student_name || "",
+            score,
+            student_group: r.student_group || "غير موجود",
+            assessment_plan: r.assessment_plan || "غير موجود",
+            docstatus: r.docstatus !== undefined ? r.docstatus : null,
+            _warning: !r.student_group
+              ? "لم يُعثر على مجموعة نشطة لهذا الطالب"
+              : !r.assessment_plan
+                ? "لم يُعثر على خطة تقييم لهذه المجموعة والمقرر"
+                : undefined,
+          };
+        });
 
         setOthers(othersRows);
       } else {
