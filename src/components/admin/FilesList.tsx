@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Table, Button, Space, Typography, Tag, Modal, Tooltip, message, Input, Flex, Select, Checkbox } from "antd";
+import { Table, Button, Space, Typography, Tag, Modal, Tooltip, message, Input, Flex, Select, Checkbox, Switch } from "antd";
 import { 
   QrcodeOutlined, 
   ShareAltOutlined, 
@@ -35,6 +35,7 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
   const [users, setUsers] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [selectedFileAssignments, setSelectedFileAssignments] = useState<{ userAssignments: any[], groupAssignments: any[] }>({ userAssignments: [], groupAssignments: [] });
+  const [showAll, setShowAll] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
 
   const fetchUsers = async () => {
@@ -336,12 +337,22 @@ export default function FilesList({ initialFiles }: { initialFiles: any[] }) {
             color: "var(--text-main)"
           }}
         />
+        <Space>
+          <span style={{ color: "var(--text-main)", fontSize: 13 }}>عرض الكل</span>
+          <Switch
+            checked={showAll}
+            onChange={setShowAll}
+            size="small"
+            checkedChildren="نعم"
+            unCheckedChildren="لا"
+          />
+        </Space>
       </Flex>
 
       <Table 
         columns={columns} 
         dataSource={filteredData.map(f => ({ ...f, key: f.id }))}
-        pagination={{ 
+        pagination={showAll ? false : { 
           pageSize: 10,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],

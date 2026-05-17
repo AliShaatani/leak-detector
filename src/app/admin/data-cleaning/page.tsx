@@ -4,7 +4,7 @@ import React, { useState, useCallback } from "react";
 import {
   Typography, Card, Space, Select, Button, Upload,
   Table, Tag, Flex, Divider, Tabs, Alert, Steps,
-  Badge, Statistic, Row, Col, Tooltip, Empty, App, Spin,
+  Badge, Statistic, Row, Col, Tooltip, Empty, App, Spin, Switch
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -103,6 +103,7 @@ export default function DataCleaningPage() {
   const [matched, setMatched]                       = useState<ResolvedRow[]>([]);
   const [others, setOthers]                         = useState<ResolvedRow[]>([]);
   const [done, setDone]                             = useState(false);
+  const [showAll, setShowAll]                       = useState(false);
 
   // ── step tracking (0-indexed) ──
   const currentStep =
@@ -577,18 +578,29 @@ export default function DataCleaningPage() {
               />
             )}
 
-            {/* Tables */}
-            <Card bordered={false} className="glass" style={{ borderRadius: 20 }}>
+             <Card bordered={false} className="glass" style={{ borderRadius: 20 }}>
               <Tabs
                 defaultActiveKey="matched"
                 size="large"
+                tabBarExtraContent={
+                  <Space style={{ paddingLeft: 12 }}>
+                    <Text style={{ fontSize: 13 }}>عرض الكل</Text>
+                    <Switch
+                      checked={showAll}
+                      onChange={setShowAll}
+                      size="small"
+                      checkedChildren="نعم"
+                      unCheckedChildren="لا"
+                    />
+                  </Space>
+                }
                 items={[
                   {
                     key: "matched",
                     label: (
                       <span>
                         الطلاب المطابقون&nbsp;
-                        <Badge count={matched.length} style={{ background: "#52c41a" }} />
+                        <Badge count={matched.length} overflowCount={99999} style={{ background: "#52c41a" }} />
                       </span>
                     ),
                     children: (
@@ -597,7 +609,7 @@ export default function DataCleaningPage() {
                         dataSource={matched.map((r, i) => ({ ...r, key: i }))}
                         bordered
                         size="middle"
-                        pagination={{ defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
+                        pagination={showAll ? false : { defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
                         style={{ borderRadius: 16, overflow: "hidden" }}
                         locale={{ emptyText: <Empty description="لا يوجد طلاب مطابقون" /> }}
                       />
@@ -608,7 +620,7 @@ export default function DataCleaningPage() {
                     label: (
                       <span>
                         طلاب مجموعات أخرى&nbsp;
-                        <Badge count={others.length} style={{ background: "#1677ff" }} />
+                        <Badge count={others.length} overflowCount={99999} style={{ background: "#1677ff" }} />
                       </span>
                     ),
                     children: (
@@ -617,7 +629,7 @@ export default function DataCleaningPage() {
                         dataSource={others.map((r, i) => ({ ...r, key: i }))}
                         bordered
                         size="middle"
-                        pagination={{ defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
+                        pagination={showAll ? false : { defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
                         style={{ borderRadius: 16, overflow: "hidden" }}
                         locale={{ emptyText: <Empty description="لا يوجد طلاب من مجموعات أخرى" /> }}
                       />

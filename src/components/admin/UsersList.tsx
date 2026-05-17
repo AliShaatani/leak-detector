@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Table, Button, Space, Tag, Avatar, message, Tooltip, Modal, Form, Input, Flex } from "antd";
+import { Table, Button, Space, Tag, Avatar, message, Tooltip, Modal, Form, Input, Flex, Switch } from "antd";
 import { UserOutlined, DeleteOutlined, KeyOutlined, SafetyCertificateOutlined, SearchOutlined } from "@ant-design/icons";
 
 export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
@@ -10,6 +10,7 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [form] = Form.useForm();
   const [modal, contextHolder] = Modal.useModal();
 
@@ -159,12 +160,22 @@ export default function UsersList({ initialUsers }: { initialUsers: any[] }) {
             color: "var(--text-main)"
           }}
         />
+        <Space>
+          <span style={{ color: "var(--text-main)", fontSize: 13 }}>عرض الكل</span>
+          <Switch
+            checked={showAll}
+            onChange={setShowAll}
+            size="small"
+            checkedChildren="نعم"
+            unCheckedChildren="لا"
+          />
+        </Space>
       </Flex>
 
       <Table 
         columns={columns} 
         dataSource={filteredData.map(u => ({ ...u, key: u.id }))}
-        pagination={{ 
+        pagination={showAll ? false : { 
           pageSize: 10,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],

@@ -54,6 +54,7 @@ export default function BulkAssessmentPage() {
   const [uploading, setUploading]       = useState(false);
   const [zeroMissing, setZeroMissing]   = useState(false);
   const [showAllErrors, setShowAllErrors] = useState(false);
+  const [showAll, setShowAll]             = useState(false);
   const [currentUser, setCurrentUser]   = useState<string>("غير معروف");
 
   // Load current admin user name once on mount
@@ -374,6 +375,17 @@ export default function BulkAssessmentPage() {
               />
             </Space>
             <Divider type="vertical" />
+            <Space>
+              <Text style={{ fontSize: 13 }}>عرض الكل</Text>
+              <Switch
+                checked={showAll}
+                onChange={setShowAll}
+                size="small"
+                checkedChildren="نعم"
+                unCheckedChildren="لا"
+              />
+            </Space>
+            <Divider type="vertical" />
             <Button 
               type="primary"
               danger
@@ -526,7 +538,7 @@ export default function BulkAssessmentPage() {
           dataSource={students.map((s, i) => ({ ...s, key: i }))}
           loading={loading}
           bordered
-          pagination={{
+          pagination={showAll ? false : {
             defaultPageSize: 20,
             showSizeChanger: true,
             pageSizeOptions: ["20", "50", "100", "500", "1000"]

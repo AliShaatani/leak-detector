@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, message, Popconfirm, Card, Flex, Typography, Transfer } from "antd";
+import { Table, Button, Modal, Form, Input, message, Popconfirm, Card, Flex, Typography, Transfer, Switch, Space } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, TeamOutlined, SearchOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -14,6 +14,7 @@ export default function GroupManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<any>(null);
   const [targetKeys, setTargetKeys] = useState<string[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [form] = Form.useForm();
 
   const fetchGroups = async () => {
@@ -205,13 +206,23 @@ export default function GroupManager() {
               color: "var(--text-main)"
             }}
           />
+          <Space>
+            <span style={{ color: "var(--text-main)", fontSize: 13 }}>عرض الكل</span>
+            <Switch
+              checked={showAll}
+              onChange={setShowAll}
+              size="small"
+              checkedChildren="نعم"
+              unCheckedChildren="لا"
+            />
+          </Space>
         </Flex>
 
         <Table 
           columns={columns} 
           dataSource={filteredData.map(g => ({ ...g, key: g.id }))}
           loading={loading}
-          pagination={{ 
+          pagination={showAll ? false : { 
             pageSize: 10,
             showSizeChanger: true,
             pageSizeOptions: ['10', '20', '50', '100'],

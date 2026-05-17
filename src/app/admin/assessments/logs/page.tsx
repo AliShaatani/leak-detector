@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Typography, Card, Table, Tag, Space, Flex, Statistic,
-  Button, Input, Select, Empty, Badge, Tooltip, message, App
+  Button, Input, Select, Empty, Badge, Tooltip, message, App, Switch
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -41,6 +41,7 @@ export default function AssessmentLogsPage() {
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState("");
   const [opFilter, setOpFilter] = useState<string | null>(null);
+  const [showAll, setShowAll]   = useState(false);
   const { message: appMessage } = App.useApp();
 
   const fetchLogs = async () => {
@@ -229,7 +230,7 @@ export default function AssessmentLogsPage() {
         </div>
 
         {/* Filters */}
-        <Flex gap={12}>
+        <Flex gap={12} align="center">
           <Search
             placeholder="بحث بكود الامتحان، المقرر، المجموعة، أو المستخدم..."
             allowClear
@@ -246,6 +247,16 @@ export default function AssessmentLogsPage() {
               { value: "zero_drafts", label: "تصفير المسودات" },
             ]}
           />
+          <Space style={{ marginRight: 8 }}>
+            <Text style={{ fontSize: 13 }}>عرض الكل</Text>
+            <Switch
+              checked={showAll}
+              onChange={setShowAll}
+              size="small"
+              checkedChildren="نعم"
+              unCheckedChildren="لا"
+            />
+          </Space>
         </Flex>
 
         {/* Table */}
@@ -254,7 +265,7 @@ export default function AssessmentLogsPage() {
           dataSource={filtered.map(l => ({ ...l, key: l.id }))}
           loading={loading}
           bordered
-          pagination={{ defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
+          pagination={showAll ? false : { defaultPageSize: 20, showSizeChanger: true, pageSizeOptions: ["20", "50", "100"] }}
           style={{ borderRadius: 20, overflow: "hidden" }}
           locale={{ emptyText: <Empty description="لا توجد سجلات بعد" /> }}
           summary={() =>
