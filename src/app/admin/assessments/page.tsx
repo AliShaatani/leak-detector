@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   Typography, Card, Space, Select, Table, Button,
   Upload, Switch, Tag, Alert, Progress, message,
-  Flex, Divider, Badge, Modal, Empty, App
+  Flex, Divider, Badge, Modal, Empty, App, Dropdown
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -16,7 +16,10 @@ import {
   ExclamationCircleOutlined,
   DatabaseOutlined,
   InfoCircleOutlined,
-  CopyOutlined
+  CopyOutlined,
+  PrinterOutlined,
+  FilePdfOutlined,
+  FileExcelOutlined
 } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
@@ -145,6 +148,239 @@ export default function BulkAssessmentPage() {
     };
     reader.readAsBinaryString(file);
     return false;
+  };
+
+  const printCertifiedSheetPdf = () => {
+    if (!selectedPlan || !metadata) return;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      appMessage.error("يرجى السماح بفتح النوافذ المنبثقة لطباعة الكشف");
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html dir="rtl" lang="ar">
+      <head>
+        <meta charset="utf-8">
+        <title>كشف درجات معتمد - ${selectedPlan}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+          body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            padding: 30px;
+            margin: 0;
+            background: #fff;
+            color: #000;
+          }
+          .header-container {
+            text-align: center;
+            margin-bottom: 25px;
+          }
+          .logo {
+            max-height: 75px;
+            display: block;
+            margin: 0 auto 15px auto;
+          }
+          .doc-title {
+            font-size: 22px;
+            font-weight: 900;
+            margin: 10px 0;
+            border-bottom: 2px double #000;
+            display: inline-block;
+            padding-bottom: 5px;
+          }
+          .info-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 25px;
+            border: 1px solid #000;
+            border-collapse: collapse;
+          }
+          .info-row {
+            display: table-row;
+          }
+          .info-cell {
+            display: table-cell;
+            border: 1px solid #000;
+            padding: 10px 15px;
+            font-size: 13px;
+            width: 50%;
+            text-align: right;
+          }
+          .info-label {
+            font-weight: 900;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 40px;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+          }
+          th {
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-weight: 900;
+          }
+          tr:nth-child(even) td {
+            background-color: #fafafa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .signatures-container {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            page-break-inside: avoid;
+          }
+          .signature-box {
+            text-align: center;
+            width: 200px;
+            font-size: 14px;
+            font-weight: 700;
+          }
+          .signature-line {
+            margin-top: 45px;
+            border-top: 1px dashed #000;
+            padding-top: 5px;
+            font-size: 11px;
+            font-weight: 400;
+            color: #666;
+          }
+          @media print {
+            body {
+              padding: 15px;
+            }
+            @page {
+              size: A4;
+              margin: 1.5cm;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header-container">
+          <img src="/logo-black.png" alt="Logo" class="logo" />
+          <h1 class="doc-title">كشف درجات معتمد</h1>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-row">
+            <div class="info-cell">
+              <span class="info-label">كود الامتحان:</span> ${selectedPlan}
+            </div>
+            <div class="info-cell">
+              <span class="info-label">اسم المقرر:</span> ${metadata.course_name}
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-cell">
+              <span class="info-label">مجموعة الطلاب:</span> ${metadata.student_group}
+            </div>
+            <div class="info-cell">
+              <span class="info-label">عدد الطلاب:</span> ${students.length} طالب
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 60px;">#</th>
+              <th style="width: 150px;">رقم القيد</th>
+              <th>اسم الطالب</th>
+              <th style="width: 120px;">الدرجة</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${students.map((s, index) => {
+              const scoreVal = s.assessment_details?.["total_score"]?.[0];
+              const displayScore = (scoreVal !== undefined && scoreVal !== null && scoreVal !== "") ? scoreVal : "null";
+              return `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${s.numeric_id || s.student}</td>
+                  <td style="text-align: right; padding-right: 15px;">${s.student_name}</td>
+                  <td style="font-weight: bold;">${displayScore}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+
+        <div class="signatures-container">
+          <div class="signature-box">
+            <div>رئيس لجنة الرصد</div>
+            <div class="signature-line">التوقيع</div>
+          </div>
+          <div class="signature-box">
+            <div>عميد الكلية</div>
+            <div class="signature-line">التوقيع</div>
+          </div>
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+            setTimeout(function() { window.close(); }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  const exportCertifiedSheetExcel = () => {
+    if (!selectedPlan || !metadata) return;
+
+    const wb = XLSX.utils.book_new();
+
+    const aoaData: any[][] = [
+      ["كشف درجات معتمد"],
+      [],
+      ["كود الامتحان:", selectedPlan],
+      ["المقرر:", metadata.course_name],
+      ["مجموعة الطلاب:", metadata.student_group],
+      ["عدد الطلاب:", `${students.length} طالب`],
+      [],
+      ["#", "رقم القيد", "اسم الطالب", "الدرجة"]
+    ];
+
+    students.forEach((s, index) => {
+      const scoreVal = s.assessment_details?.["total_score"]?.[0];
+      const displayScore = (scoreVal !== undefined && scoreVal !== null && scoreVal !== "") ? scoreVal : "null";
+      aoaData.push([
+        index + 1,
+        s.numeric_id || s.student,
+        s.student_name,
+        displayScore === "null" ? "null" : parseFloat(String(displayScore)) || 0
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(aoaData);
+
+    ws["!cols"] = [
+      { wch: 8 },  // #
+      { wch: 15 }, // رقم القيد
+      { wch: 35 }, // اسم الطالب
+      { wch: 12 }  // الدرجة
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "كشف درجات معتمد");
+    XLSX.writeFile(wb, `certified_grades_${selectedPlan}.xlsx`);
   };
 
   const processScores = async (scores: any[]) => {
@@ -403,6 +639,33 @@ export default function BulkAssessmentPage() {
             >
               تحديث الدرجات
             </Button>
+            <Dropdown
+              disabled={!selectedPlan || students.length === 0}
+              menu={{
+                items: [
+                  {
+                    key: "pdf",
+                    label: "تحميل PDF / طباعة",
+                    icon: <FilePdfOutlined style={{ color: "#ff4d4f" }} />,
+                    onClick: printCertifiedSheetPdf,
+                  },
+                  {
+                    key: "excel",
+                    label: "تحميل Excel",
+                    icon: <FileExcelOutlined style={{ color: "#52c41a" }} />,
+                    onClick: exportCertifiedSheetExcel,
+                  },
+                ],
+              }}
+            >
+              <Button 
+                type="primary" 
+                style={{ background: "#52c41a", borderColor: "#52c41a" }} 
+                icon={<PrinterOutlined />}
+              >
+                كشف درجات معتمد
+              </Button>
+            </Dropdown>
           </Space>
         </Flex>
 
