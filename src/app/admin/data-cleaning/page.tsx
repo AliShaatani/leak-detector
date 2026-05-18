@@ -288,7 +288,23 @@ export default function DataCleaningPage() {
 
     const wb = XLSX.utils.book_new();
 
-    // Helper: convert rows to sheet
+    // Helper: convert matched rows to matched sheet (student_id, score, status)
+    const toMatchSheet = (rows: ResolvedRow[]) =>
+      XLSX.utils.json_to_sheet(
+        rows.map((r) => {
+          let statusText = "غير مرصودة";
+          if (r.docstatus === 1) statusText = "مرصودة معتمدة";
+          else if (r.docstatus === 0) statusText = "مسودة غير معتمدة";
+
+          return {
+            student_id: r.student_id,
+            score: r.score,
+            "حالة الرصد": statusText,
+          };
+        })
+      );
+
+    // Helper: convert rows to sheet with all fields
     const toSheet = (rows: ResolvedRow[]) =>
       XLSX.utils.json_to_sheet(
         rows.map((r, index) => {
@@ -311,7 +327,7 @@ export default function DataCleaningPage() {
     // Sheet 1: matched students → original assessment plan
     if (matched.length > 0) {
       const sheetName = (selectedPlan || "Matched").slice(0, 31); // Excel limit: 31 chars
-      XLSX.utils.book_append_sheet(wb, toSheet(matched), sheetName);
+      XLSX.utils.book_append_sheet(wb, toMatchSheet(matched), sheetName);
     }
 
     // Sheets for "others": one sheet per unique assessment plan
