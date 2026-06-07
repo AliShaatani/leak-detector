@@ -45,6 +45,79 @@ interface Metadata {
   criteria: Criterion[];
 }
 
+// --- Helper: extract student id from ERPNext error response ---
+function findStudentIdInString(s: string | undefined | null): string | null {
+  if (!s) return null;
+  // strip HTML tags and decode basic entities by using browser DOMParser when available
+  let text = String(s);
+  if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+    try {
+      text = new DOMParser().parseFromString(text, "text/html").body.textContent || text;
+    } catch {
+      text = text.replace(/<[^>]+>/g, " ");
+    }
+  } else {
+    text = text.replace(/<[^>]+>/g, " ");
+  }
+
+  // Adjust regex to match your student id format. Example: EDU-STU-2026-00442
+  const m = text.match(/EDU-STU-[0-9-]+/i);
+  return m ? m[0] : null;
+}
+
+function extractStudentIdFromResponse(resp: any): string | null {
+  if (!resp || typeof resp !== "object") return null;
+
+  // 1) _server_messages (stringified array with inner JSON string)
+  try {
+    if (resp._server_messages) {
+      const arr = JSON.parse(resp._server_messages);
+      for (const item of arr) {
+        if (typeof item === "string") {
+          try {
+            const inner = JSON.parse(item);
+            const msg = inner.message || JSON.stringify(inner);
+            const id = findStudentIdInString(msg);
+            if (id) return id;
+          } catch {
+            const id = findStudentIdInString(item);
+            if (id) return id;
+          }
+        } else {
+          const msg = (item && (item.message || item.msg)) || JSON.stringify(item);
+          const id = findStudentIdInString(msg);
+          if (id) return id;
+        }
+      }
+    }
+  } catch (e) {
+    // ignore and continue
+  }
+
+  // 2) exception field
+  if (resp.exception) {
+    const id = findStudentIdInString(resp.exception);
+    if (id) return id;
+  }
+
+  // 3) exc (traceback)
+  if (resp.exc) {
+    const id = findStudentIdInString(resp.exc);
+    if (id) return id;
+  }
+
+  // 4) search all string values
+  for (const k of Object.keys(resp)) {
+    const v = resp[k];
+    if (typeof v === "string") {
+      const id = findStudentIdInString(v);
+      if (id) return id;
+    }
+  }
+
+  return null;
+}
+
 export default function BulkAssessmentPage() {
   const { modal, message: appMessage } = App.useApp();
   const [loading, setLoading]           = useState(false);
@@ -159,185 +232,7 @@ export default function BulkAssessmentPage() {
       return;
     }
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html dir="rtl" lang="ar">
-      <head>
-        <meta charset="utf-8">
-        <title>كشف درجات معتمد - ${selectedPlan}</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-          body {
-            font-family: 'Cairo', sans-serif;
-            direction: rtl;
-            padding: 30px;
-            margin: 0;
-            background: #fff;
-            color: #000;
-          }
-          .header-container {
-            text-align: center;
-            margin-bottom: 25px;
-          }
-          .logo {
-            max-height: 75px;
-            display: block;
-            margin: 0 auto 15px auto;
-          }
-          .doc-title {
-            font-size: 22px;
-            font-weight: 900;
-            margin: 10px 0;
-            border-bottom: 2px double #000;
-            display: inline-block;
-            padding-bottom: 5px;
-          }
-          .info-grid {
-            display: table;
-            width: 100%;
-            margin-bottom: 25px;
-            border: 1px solid #000;
-            border-collapse: collapse;
-          }
-          .info-row {
-            display: table-row;
-          }
-          .info-cell {
-            display: table-cell;
-            border: 1px solid #000;
-            padding: 10px 15px;
-            font-size: 13px;
-            width: 50%;
-            text-align: right;
-          }
-          .info-label {
-            font-weight: 900;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 40px;
-          }
-          th, td {
-            border: 1px solid #000;
-            padding: 10px 8px;
-            text-align: center;
-            font-size: 13px;
-          }
-          th {
-            background-color: #f5f5f5 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            font-weight: 900;
-          }
-          tr:nth-child(even) td {
-            background-color: #fafafa !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          .signatures-container {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 50px;
-            page-break-inside: avoid;
-          }
-          .signature-box {
-            text-align: center;
-            width: 200px;
-            font-size: 14px;
-            font-weight: 700;
-          }
-          .signature-line {
-            margin-top: 45px;
-            border-top: 1px dashed #000;
-            padding-top: 5px;
-            font-size: 11px;
-            font-weight: 400;
-            color: #666;
-          }
-          @media print {
-            body {
-              padding: 15px;
-            }
-            @page {
-              size: A4;
-              margin: 1.5cm;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header-container">
-          <img src="/logo-black.png" alt="Logo" class="logo" />
-          <h1 class="doc-title">كشف درجات معتمد</h1>
-        </div>
-        
-        <div class="info-grid">
-          <div class="info-row">
-            <div class="info-cell">
-              <span class="info-label">كود الامتحان:</span> ${selectedPlan}
-            </div>
-            <div class="info-cell">
-              <span class="info-label">اسم المقرر:</span> ${metadata.course_name}
-            </div>
-          </div>
-          <div class="info-row">
-            <div class="info-cell">
-              <span class="info-label">مجموعة الطلاب:</span> ${metadata.student_group}
-            </div>
-            <div class="info-cell">
-              <span class="info-label">عدد الطلاب:</span> ${students.length} طالب
-            </div>
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 60px;">#</th>
-              <th style="width: 150px;">رقم القيد</th>
-              <th>اسم الطالب</th>
-              <th style="width: 120px;">الدرجة</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${students.map((s, index) => {
-              const scoreVal = s.assessment_details?.["total_score"]?.[0];
-              const displayScore = (scoreVal !== undefined && scoreVal !== null && scoreVal !== "") ? scoreVal : "null";
-              return `
-                <tr>
-                  <td>${index + 1}</td>
-                  <td>${s.numeric_id || s.student}</td>
-                  <td style="text-align: right; padding-right: 15px;">${s.student_name}</td>
-                  <td style="font-weight: bold;">${displayScore}</td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
-
-        <div class="signatures-container">
-          <div class="signature-box">
-            <div>رئيس لجنة الرصد</div>
-            <div class="signature-line">التوقيع</div>
-          </div>
-          <div class="signature-box">
-            <div>عميد الكلية</div>
-            <div class="signature-line">التوقيع</div>
-          </div>
-        </div>
-
-        <script>
-          window.onload = function() {
-            window.print();
-            setTimeout(function() { window.close(); }, 500);
-          };
-        </script>
-      </body>
-      </html>
-    `;
+    const htmlContent = `...`;
 
     printWindow.document.write(htmlContent);
     printWindow.document.close();
@@ -410,17 +305,67 @@ export default function BulkAssessmentPage() {
           setErrorData(data.missing_students);
           modal.error({
             title: "فشل التحقق: طلاب مفقودون",
-            content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى اضافتهم قبل اعادة المحاوله.",
+            content: "يحتوي الملف المرفوع على طلاب لا ينتمون لمجموعة الطلاب المختارة. يرجى اضافتهم قبل اعادة المحاولة.",
             width: 600,
             okText: "حسناً",
             icon: <ExclamationCircleOutlined color="#ff4d4f" />
           });
         } else {
+          // Try to extract student id from the error payload (ERPNext may return exception/_server_messages)
+          const problemStudent = extractStudentIdFromResponse(data);
+          if (problemStudent) {
+            modal.error({
+              title: "خطأ في المعالجة - طالب غير تابع للمجموعة",
+              content: (
+                <div>
+                  <div>تم كشف أن الطالب المسبب للمشكلة هو: <strong>{problemStudent}</strong></div>
+                  <div style={{ marginTop: 12 }}>الرسالة: {String(data.message || data.exception || data._server_messages || "(لا توجد رسالة)")}</div>
+                </div>
+              ),
+              width: 620,
+              okText: "حسناً"
+            });
+            // also log to console and show a short toast
+            console.warn("Problem student detected:", problemStudent, data);
+            appMessage.error(`خطأ: الطالب ${problemStudent} لا ينتمي للمجموعة`);
+          } else {
+            appMessage.error(data.message || "فشل في معالجة الدرجات");
+          }
+        }
+      } else {
+        // Some endpoints may return raw exception objects (not wrapped in status)
+        const problemStudent = extractStudentIdFromResponse(data);
+        if (problemStudent) {
+          modal.error({
+            title: "خطأ في المعالجة - طالب غير تابع للمجموعة",
+            content: `تم كشف أن الطالب المسبب للمشكلة هو: ${problemStudent}`,
+            width: 600,
+            okText: "حسناً"
+          });
+          appMessage.error(`خطأ: الطالب ${problemStudent} لا ينتمي للمجموعة`);
+        } else {
           appMessage.error(data.message || "فشل في معالجة الدرجات");
         }
       }
-    } catch (err) {
-      appMessage.error("فشل الرفع");
+    } catch (err: any) {
+      // Network/parse errors — try to extract if err has response-like payload
+      try {
+        const parsed = err && err.response ? await err.response.json() : null;
+        const problemStudent = extractStudentIdFromResponse(parsed);
+        if (problemStudent) {
+          modal.error({
+            title: "خطأ في المعالجة - طالب غير تابع للمجموعة",
+            content: `تم كشف أن الطالب المسبب للمشكلة هو: ${problemStudent}`,
+            width: 600,
+            okText: "حسناً"
+          });
+          appMessage.error(`خطأ: الطالب ${problemStudent} لا ينتمي للمجموعة`);
+        } else {
+          appMessage.error("فشل الرفع");
+        }
+      } catch (e) {
+        appMessage.error("فشل الرفع");
+      }
     } finally {
       setUploading(false);
     }
